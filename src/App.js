@@ -41,6 +41,9 @@ const initialComplaints = [
     createdAt: '2026-06-07 18:45',
     image:
       'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80',
+    ],
     updates: [
       { label: 'Submitted', note: 'Complaint registered by citizen.', at: '2026-06-07 18:45' },
       { label: 'In Review', note: 'Area inspection requested by admin.', at: '2026-06-08 10:30' },
@@ -61,6 +64,9 @@ const initialComplaints = [
     createdAt: '2026-06-06 14:20',
     image:
       'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80',
+    ],
     updates: [
       { label: 'Submitted', note: 'Complaint registered by citizen.', at: '2026-06-06 14:20' },
       { label: 'In Review', note: 'Ward office reviewed the complaint.', at: '2026-06-07 11:00' },
@@ -93,7 +99,7 @@ const emptyComplaintForm = {
   type: complaintTypes[0],
   location: '',
   description: '',
-  image: '',
+  images: [],
 };
 
 function readStorage(key, fallback) {
@@ -146,7 +152,16 @@ function App() {
 
   useEffect(() => {
     const storedUsers = readStorage(STORAGE_KEYS.users, initialUsers);
-    const storedComplaints = readStorage(STORAGE_KEYS.complaints, initialComplaints);
+    const storedComplaintsRaw = readStorage(STORAGE_KEYS.complaints, initialComplaints);
+    const storedComplaints = storedComplaintsRaw.map((complaint) => {
+      if (!complaint.images) {
+        return {
+          ...complaint,
+          images: complaint.image ? [complaint.image] : [],
+        };
+      }
+      return complaint;
+    });
     const storedSession = readStorage(STORAGE_KEYS.session, null);
 
     setUsers(storedUsers);
@@ -276,21 +291,31 @@ function App() {
     setAuthMessage('');
   }
 
-  function handleComplaintImage(event) {
-    const file = event.target.files?.[0];
-
-    if (!file) {
+  function handleComplaintImages(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setComplaintForm((current) => ({
-        ...current,
-        image: typeof reader.result === 'string' ? reader.result : '',
-      }));
-    };
-    reader.readAsDataURL(file);
+    let loadedImages = [];
+    let readCount = 0;
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          loadedImages.push(reader.result);
+        }
+        readCount++;
+        if (readCount === files.length) {
+          setComplaintForm((current) => ({
+            ...current,
+            images: [...(current.images || []), ...loadedImages],
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   function handleComplaintSubmit(event) {
@@ -309,8 +334,10 @@ function App() {
       type: complaintForm.type,
       location: complaintForm.location.trim(),
       description: complaintForm.description.trim(),
-      image:
-        complaintForm.image ||
+      images: complaintForm.images.length
+        ? complaintForm.images
+        : ['https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=900&q=80'],
+      image: complaintForm.images[0] ||
         'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=900&q=80',
       status: 'Submitted',
       forwardedTo: 'Pending review',
@@ -387,7 +414,7 @@ function App() {
             complaintForm={complaintForm}
             setComplaintForm={setComplaintForm}
             complaintTypes={complaintTypes}
-            handleComplaintImage={handleComplaintImage}
+            handleComplaintImages={handleComplaintImages}
             handleComplaintSubmit={handleComplaintSubmit}
           />
         ) : session?.role === 'admin' ? (

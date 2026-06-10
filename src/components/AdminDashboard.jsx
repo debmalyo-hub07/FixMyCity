@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Clock, ClipboardList, Search, SlidersHorizontal, MapPin, Tag, Briefcase } from 'lucide-react';
+import { Users, Clock, ClipboardList, Search, SlidersHorizontal, MapPin, Tag, Briefcase, Maximize2 } from 'lucide-react';
 import ComplaintDetail from './ComplaintDetail';
 
 export default function AdminDashboard({
@@ -18,6 +18,22 @@ export default function AdminDashboard({
   const [selectedType, setSelectedType] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
   const [mobileView, setMobileView] = useState('list'); // 'list' or 'detail'
+  const [maximizedImage, setMaximizedImage] = useState(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMaximizedImage(null);
+      }
+    };
+    if (maximizedImage) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [maximizedImage]);
 
   // Categories
   const categories = useMemo(() => {
@@ -202,11 +218,21 @@ export default function AdminDashboard({
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 100 }}
                   >
-                    <img
-                      src={complaint.image}
-                      alt={complaint.title}
-                      className="admin-card-img"
-                    />
+                    <div className="admin-card-img-container">
+                      <img
+                        src={complaint.images?.[0] || complaint.image}
+                        alt={complaint.title}
+                        className="admin-card-img"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMaximizedImage(complaint.images?.[0] || complaint.image);
+                        }}
+                        title="Click to view maximized"
+                      />
+                      <div className="admin-card-img-overlay">
+                        <Maximize2 size={12} color="#ffffff" />
+                      </div>
+                    </div>
                     <div className="admin-card-content">
                       <div className="admin-card-topbar">
                         <div>
@@ -314,11 +340,44 @@ export default function AdminDashboard({
         >
           <ComplaintDetail
             selectedComplaint={selectedComplaint}
-            showFullDetails={false}
+            showFullDetails={true}
             onBackToList={() => setMobileView('list')}
+            onImageClick={setMaximizedImage}
           />
         </motion.div>
       </div>
+
+      {/* Lightbox maximized photo viewer */}
+      <AnimatePresence>
+        {maximizedImage && (
+          <motion.div
+            className="lightbox-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMaximizedImage(null)}
+          >
+            <motion.div
+              className="lightbox-container"
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img src={maximizedImage} alt="Maximized view" className="lightbox-img" />
+              <button
+                type="button"
+                className="lightbox-close-btn"
+                onClick={() => setMaximizedImage(null)}
+                title="Close Viewer"
+              >
+                &times;
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

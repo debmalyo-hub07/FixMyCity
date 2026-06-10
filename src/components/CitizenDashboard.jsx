@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, CheckCircle2, ClipboardList, PlusCircle, BarChart2 } from 'lucide-react';
 import ComplaintForm from './ComplaintForm';
 import ComplaintList from './ComplaintList';
@@ -15,11 +15,27 @@ export default function CitizenDashboard({
   complaintForm,
   setComplaintForm,
   complaintTypes,
-  handleComplaintImage,
+  handleComplaintImages,
   handleComplaintSubmit,
 }) {
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'track'
   const [mobileTrackView, setMobileTrackView] = useState('list'); // 'list' or 'detail'
+  const [maximizedImage, setMaximizedImage] = useState(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMaximizedImage(null);
+      }
+    };
+    if (maximizedImage) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [maximizedImage]);
 
   const citizenStats = {
     total: currentCitizenComplaints.length,
@@ -144,7 +160,7 @@ export default function CitizenDashboard({
             complaintForm={complaintForm}
             setComplaintForm={setComplaintForm}
             complaintTypes={complaintTypes}
-            handleComplaintImage={handleComplaintImage}
+            handleComplaintImages={handleComplaintImages}
             handleComplaintSubmit={handleFormSubmitWrapped}
           />
         </motion.div>
@@ -174,9 +190,42 @@ export default function CitizenDashboard({
             selectedComplaint={selectedComplaint}
             showFullDetails={true}
             onBackToList={() => setMobileTrackView('list')}
+            onImageClick={setMaximizedImage}
           />
         </motion.div>
       </div>
+
+      {/* Lightbox maximized photo viewer */}
+      <AnimatePresence>
+        {maximizedImage && (
+          <motion.div
+            className="lightbox-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMaximizedImage(null)}
+          >
+            <motion.div
+              className="lightbox-container"
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img src={maximizedImage} alt="Maximized view" className="lightbox-img" />
+              <button
+                type="button"
+                className="lightbox-close-btn"
+                onClick={() => setMaximizedImage(null)}
+                title="Close Viewer"
+              >
+                &times;
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

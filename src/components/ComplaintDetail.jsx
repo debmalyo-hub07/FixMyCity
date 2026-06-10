@@ -1,8 +1,15 @@
-import React from 'react';
-import { MapPin, Tag, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Tag, ShieldAlert, Maximize2 } from 'lucide-react';
 import Timeline from './Timeline';
 
-export default function ComplaintDetail({ selectedComplaint, showFullDetails = true, onBackToList }) {
+export default function ComplaintDetail({ selectedComplaint, showFullDetails = true, onBackToList, onImageClick }) {
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  // Reset active photo index when selected complaint changes
+  useEffect(() => {
+    setActivePhotoIndex(0);
+  }, [selectedComplaint?.id]);
+
   if (!selectedComplaint) {
     return (
       <div className="empty-state-modern">
@@ -11,6 +18,9 @@ export default function ComplaintDetail({ selectedComplaint, showFullDetails = t
       </div>
     );
   }
+
+  const images = selectedComplaint.images || (selectedComplaint.image ? [selectedComplaint.image] : []);
+  const activeImage = images[activePhotoIndex] || selectedComplaint.image;
 
   return (
     <div className="detail-card-modern">
@@ -28,13 +38,40 @@ export default function ComplaintDetail({ selectedComplaint, showFullDetails = t
             </div>
           </div>
 
-          {selectedComplaint.image && (
-            <div className="detail-image-box">
-              <img
-                className="detail-img-fluid"
-                src={selectedComplaint.image}
-                alt={selectedComplaint.title}
-              />
+          {activeImage && (
+            <div className="detail-gallery-container-modern">
+              <div 
+                className="detail-image-box"
+                onClick={() => onImageClick && onImageClick(activeImage)}
+                style={{ cursor: onImageClick ? 'pointer' : 'default' }}
+                title={onImageClick ? "Click to view maximized" : ""}
+              >
+                <img
+                  className="detail-img-fluid"
+                  src={activeImage}
+                  alt={selectedComplaint.title}
+                />
+                {onImageClick && (
+                  <div className="image-hover-zoom-overlay">
+                    <Maximize2 size={18} color="#ffffff" />
+                  </div>
+                )}
+              </div>
+
+              {images.length > 1 && (
+                <div className="detail-gallery-thumbnails-row">
+                  {images.map((imgUrl, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={`detail-gallery-thumb-btn ${index === activePhotoIndex ? 'is-active' : ''}`}
+                      onClick={() => setActivePhotoIndex(index)}
+                    >
+                      <img src={imgUrl} alt={`Thumbnail ${index + 1}`} className="detail-gallery-thumb-img" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
