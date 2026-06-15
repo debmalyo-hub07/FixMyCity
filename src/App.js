@@ -46,7 +46,9 @@ function readSession() {
 }
 
 async function fetchComplaints() {
-  const res = await fetch(`${API_BASE_URL}/api/complaints`);
+  const res = await fetch(`${API_BASE_URL}/api/complaints`, {
+    headers: { 'ngrok-skip-browser-warning': 'true' }
+  });
   if (!res.ok) throw new Error('Failed to fetch complaints');
   return res.json();
 }
@@ -134,7 +136,10 @@ function App() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
           phone: loginForm.phone.trim(),
           password: loginForm.password,
@@ -171,7 +176,10 @@ function App() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
           name: registerForm.name.trim(),
           phone: registerForm.phone.trim(),
@@ -270,7 +278,10 @@ function App() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/complaints`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
           citizenName: session.name,
           citizenPhone: session.phone,
@@ -305,7 +316,10 @@ function App() {
         `${API_BASE_URL}/api/complaints/${complaintId}/status`,
         {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ status: nextStatus, forwardedTo }),
         }
       );
@@ -332,7 +346,10 @@ function App() {
     try {
       const res = await fetch(
         `${API_BASE_URL}/api/complaints/${complaintId}`,
-        { method: 'DELETE' }
+        { 
+          method: 'DELETE',
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        }
       );
 
       if (!res.ok) {
