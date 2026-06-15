@@ -5,96 +5,25 @@ import Hero from './components/Hero';
 import CitizenDashboard from './components/CitizenDashboard';
 import AdminDashboard from './components/AdminDashboard';
 
-const STORAGE_KEYS = {
-  users: 'fixmycity-users',
-  complaints: 'fixmycity-complaints',
-  session: 'fixmycity-session',
-};
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-const complaintTypes = [
+const SESSION_KEY = 'fixmycity-session';
+
+export const complaintTypes = [
   'Road problem',
   'Potholes',
   'Drainage problem',
   'Others',
 ];
 
-const authorityOptions = [
+export const authorityOptions = [
   'Municipal Engineering Department',
   'Road Maintenance Cell',
   'Drainage and Sanitation Department',
   'Ward Office',
 ];
 
-const initialComplaints = [
-  {
-    id: 'CMP-2401',
-    citizenName: 'Aarav Sen',
-    citizenPhone: '9876543210',
-    title: 'Large potholes near market road',
-    type: 'Potholes',
-    location: 'MG Road, near City Market Gate 2',
-    description:
-      'Two deep potholes are causing traffic jams and bike skids during evening hours.',
-    status: 'In Review',
-    forwardedTo: 'Road Maintenance Cell',
-    updatedAt: '2026-06-08 10:30',
-    createdAt: '2026-06-07 18:45',
-    image:
-      'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80',
-    ],
-    updates: [
-      { label: 'Submitted', note: 'Complaint registered by citizen.', at: '2026-06-07 18:45' },
-      { label: 'In Review', note: 'Area inspection requested by admin.', at: '2026-06-08 10:30' },
-    ],
-  },
-  {
-    id: 'CMP-2402',
-    citizenName: 'Diya Kapoor',
-    citizenPhone: '9123456780',
-    title: 'Overflowing roadside drain',
-    type: 'Drainage problem',
-    location: 'Lake View Colony, Block B',
-    description:
-      'Drain water is overflowing onto the road and creating a strong smell near the school entrance.',
-    status: 'Forwarded',
-    forwardedTo: 'Drainage and Sanitation Department',
-    updatedAt: '2026-06-08 09:10',
-    createdAt: '2026-06-06 14:20',
-    image:
-      'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80',
-    ],
-    updates: [
-      { label: 'Submitted', note: 'Complaint registered by citizen.', at: '2026-06-06 14:20' },
-      { label: 'In Review', note: 'Ward office reviewed the complaint.', at: '2026-06-07 11:00' },
-      {
-        label: 'Forwarded',
-        note: 'Issue forwarded to Drainage and Sanitation Department.',
-        at: '2026-06-08 09:10',
-      },
-    ],
-  },
-];
-
-const initialUsers = [
-  {
-    name: 'Aarav Sen',
-    phone: '9876543210',
-    aadhar: '123412341234',
-    password: 'citizen123',
-  },
-  {
-    name: 'Diya Kapoor',
-    phone: '9123456780',
-    aadhar: '987698769876',
-    password: 'citizen123',
-  },
-];
-
-const emptyComplaintForm = {
+const EMPTY_COMPLAINT_FORM = {
   title: '',
   type: complaintTypes[0],
   location: '',
@@ -102,215 +31,230 @@ const emptyComplaintForm = {
   images: [],
 };
 
-function readStorage(key, fallback) {
-  const stored = localStorage.getItem(key);
-  if (!stored) {
-    return fallback;
-  }
+const EMPTY_LOGIN_FORM = { phone: '', password: '' };
+const EMPTY_REGISTER_FORM = { name: '', phone: '', aadhar: '', password: '' };
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function readSession() {
   try {
-    return JSON.parse(stored);
-  } catch (error) {
-    return fallback;
+    return JSON.parse(localStorage.getItem(SESSION_KEY));
+  } catch {
+    return null;
   }
 }
 
-function persist(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+async function fetchComplaints() {
+  const res = await fetch('http://localhost:5000/api/complaints');
+  if (!res.ok) throw new Error('Failed to fetch complaints');
+  return res.json();
 }
 
-function getNowStamp() {
-  return new Date().toLocaleString('en-IN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-}
+// ─── App ──────────────────────────────────────────────────────────────────────
 
 function App() {
   const [portal, setPortal] = useState('citizen');
   const [citizenMode, setCitizenMode] = useState('login');
-  const [users, setUsers] = useState([]);
   const [complaints, setComplaints] = useState([]);
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState(readSession);
   const [authMessage, setAuthMessage] = useState('');
-  const [registerForm, setRegisterForm] = useState({
-    name: '',
-    phone: '',
-    aadhar: '',
-    password: '',
-  });
-  const [loginForm, setLoginForm] = useState({
-    phone: '',
-    password: '',
-  });
-  const [complaintForm, setComplaintForm] = useState(emptyComplaintForm);
-  const [selectedComplaintId, setSelectedComplaintId] = useState('CMP-2401');
+  const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
+  const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
+  const [complaintForm, setComplaintForm] = useState(EMPTY_COMPLAINT_FORM);
+  const [selectedComplaintId, setSelectedComplaintId] = useState('');
 
+  // ── Bootstrap complaints on mount ──────────────────────────────────────────
   useEffect(() => {
-    const storedUsers = readStorage(STORAGE_KEYS.users, initialUsers);
-    const storedComplaintsRaw = readStorage(STORAGE_KEYS.complaints, initialComplaints);
-    const storedComplaints = storedComplaintsRaw.map((complaint) => {
-      if (!complaint.images) {
-        return {
-          ...complaint,
-          images: complaint.image ? [complaint.image] : [],
-        };
-      }
-      return complaint;
-    });
-    const storedSession = readStorage(STORAGE_KEYS.session, null);
-
-    setUsers(storedUsers);
-    setComplaints(storedComplaints);
-    setSession(storedSession);
-    setSelectedComplaintId(storedComplaints[0]?.id || '');
+    fetchComplaints()
+      .then((data) => {
+        setComplaints(data);
+        if (data.length > 0) setSelectedComplaintId(data[0].id);
+      })
+      .catch((err) => console.error('Error fetching complaints:', err));
   }, []);
 
-  useEffect(() => {
-    if (users.length) {
-      persist(STORAGE_KEYS.users, users);
-    }
-  }, [users]);
-
-  useEffect(() => {
-    if (complaints.length) {
-      persist(STORAGE_KEYS.complaints, complaints);
-    }
-  }, [complaints]);
-
+  // ── Persist session ────────────────────────────────────────────────────────
   useEffect(() => {
     if (session) {
-      persist(STORAGE_KEYS.session, session);
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     } else {
-      localStorage.removeItem(STORAGE_KEYS.session);
+      localStorage.removeItem(SESSION_KEY);
     }
   }, [session]);
 
-  const currentCitizenComplaints = useMemo(() => {
-    if (!session || session.role !== 'citizen') {
-      return [];
-    }
+  // ── Derived state ──────────────────────────────────────────────────────────
+  const currentCitizenComplaints = useMemo(
+    () =>
+      session?.role === 'citizen'
+        ? complaints.filter((c) => c.citizenPhone === session.phone)
+        : [],
+    [complaints, session]
+  );
 
-    return complaints.filter((complaint) => complaint.citizenPhone === session.phone);
-  }, [complaints, session]);
-
-  const selectedComplaint = useMemo(() => {
-    return complaints.find((complaint) => complaint.id === selectedComplaintId) || complaints[0];
-  }, [complaints, selectedComplaintId]);
+  const selectedComplaint = useMemo(
+    () => complaints.find((c) => c.id === selectedComplaintId) ?? complaints[0],
+    [complaints, selectedComplaintId]
+  );
 
   const stats = useMemo(() => {
-    const citizenSet = new Set(complaints.map((complaint) => complaint.citizenPhone));
-
+    const citizens = new Set(complaints.map((c) => c.citizenPhone)).size;
     return {
       total: complaints.length,
-      active: complaints.filter((complaint) => complaint.status !== 'Resolved').length,
-      resolved: complaints.filter((complaint) => complaint.status === 'Resolved').length,
-      citizens: citizenSet.size,
+      active: complaints.filter((c) => c.status !== 'Resolved').length,
+      resolved: complaints.filter((c) => c.status === 'Resolved').length,
+      citizens,
     };
   }, [complaints]);
 
-  const adminCredentials = {
-    id: 'admin@fixmycity',
-    password: 'admin123',
-    name: 'City Admin',
-  };
-
+  // ── Auth helpers ───────────────────────────────────────────────────────────
   function resetAuthForms() {
     setAuthMessage('');
-    setLoginForm({ phone: '', password: '' });
-    setRegisterForm({ name: '', phone: '', aadhar: '', password: '' });
+    setLoginForm(EMPTY_LOGIN_FORM);
+    setRegisterForm(EMPTY_REGISTER_FORM);
   }
 
-  function handleCitizenRegister(event) {
-    event.preventDefault();
-
-    const normalizedPhone = registerForm.phone.trim();
-    const normalizedAadhar = registerForm.aadhar.trim();
-
-    if (users.some((user) => user.phone === normalizedPhone)) {
-      setAuthMessage('A citizen account with this mobile number already exists.');
-      return;
+  async function refreshComplaints() {
+    try {
+      const data = await fetchComplaints();
+      setComplaints(data);
+      if (data.length > 0 && !data.some((c) => c.id === selectedComplaintId)) {
+        setSelectedComplaintId(data[0].id);
+      }
+    } catch (err) {
+      console.error('Error refreshing complaints:', err);
     }
-
-    const newUser = {
-      name: registerForm.name.trim(),
-      phone: normalizedPhone,
-      aadhar: normalizedAadhar,
-      password: registerForm.password,
-    };
-
-    const nextUsers = [...users, newUser];
-    setUsers(nextUsers);
-    setSession({ role: 'citizen', name: newUser.name, phone: newUser.phone });
-    setCitizenMode('login');
-    setAuthMessage('Citizen account created successfully.');
-    setRegisterForm({ name: '', phone: '', aadhar: '', password: '' });
   }
 
-  function handleCitizenLogin(event) {
+  // ── Consolidated login (citizen + admin) ───────────────────────────────────
+  async function handleLogin(event, requiredRole) {
     event.preventDefault();
-
-    const matchingUser = users.find(
-      (user) =>
-        user.phone === loginForm.phone.trim() && user.password === loginForm.password
-    );
-
-    if (!matchingUser) {
-      setAuthMessage('Invalid citizen mobile number or password.');
-      return;
-    }
-
-    setSession({
-      role: 'citizen',
-      name: matchingUser.name,
-      phone: matchingUser.phone,
-    });
     setAuthMessage('');
-  }
 
-  function handleAdminLogin(event) {
-    event.preventDefault();
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: loginForm.phone.trim(),
+          password: loginForm.password,
+        }),
+      });
 
-    if (
-      loginForm.phone.trim() !== adminCredentials.id ||
-      loginForm.password !== adminCredentials.password
-    ) {
-      setAuthMessage('Invalid admin ID or password.');
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthMessage(data.message || 'Invalid credentials.');
+        return;
+      }
+
+      if (requiredRole === 'admin' && data.user.role !== 'admin') {
+        setAuthMessage('Access denied. Admin credentials required.');
+        return;
+      }
+
+      setSession(data.user);
+      await refreshComplaints();
+    } catch (err) {
+      console.error('Login error:', err);
+      setAuthMessage('Could not connect to database server.');
     }
-
-    setSession({
-      role: 'admin',
-      name: adminCredentials.name,
-      phone: adminCredentials.id,
-    });
-    setAuthMessage('');
   }
 
+  const handleCitizenLogin = (e) => handleLogin(e, 'citizen');
+  const handleAdminLogin = (e) => handleLogin(e, 'admin');
+
+  async function handleCitizenRegister(event) {
+    event.preventDefault();
+    setAuthMessage('');
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: registerForm.name.trim(),
+          phone: registerForm.phone.trim(),
+          aadhar: registerForm.aadhar.trim(),
+          password: registerForm.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthMessage(data.message || 'Registration failed.');
+        return;
+      }
+
+      setCitizenMode('login');
+      setRegisterForm(EMPTY_REGISTER_FORM);
+      setAuthMessage('Registration successful! Please log in.');
+    } catch (err) {
+      console.error('Register error:', err);
+      setAuthMessage('Could not connect to database server.');
+    }
+  }
+
+  // Helper to compress images on client side
+  function compressImage(base64Str, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      img.onerror = () => {
+        resolve(base64Str);
+      };
+    });
+  }
+
+  // ── Complaint handlers ─────────────────────────────────────────────────────
   function handleComplaintImages(event) {
-    const files = Array.from(event.target.files || []);
-    if (!files.length) {
-      return;
-    }
+    const files = Array.from(event.target.files ?? []);
+    if (!files.length) return;
 
-    let loadedImages = [];
-    let readCount = 0;
+    let loaded = [];
+    let count = 0;
 
     files.forEach((file) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         if (typeof reader.result === 'string') {
-          loadedImages.push(reader.result);
+          try {
+            const compressed = await compressImage(reader.result);
+            loaded.push(compressed);
+          } catch (e) {
+            loaded.push(reader.result);
+          }
         }
-        readCount++;
-        if (readCount === files.length) {
-          setComplaintForm((current) => ({
-            ...current,
-            images: [...(current.images || []), ...loadedImages],
+        if (++count === files.length) {
+          setComplaintForm((prev) => ({
+            ...prev,
+            images: [...prev.images, ...loaded],
           }));
         }
       };
@@ -318,74 +262,95 @@ function App() {
     });
   }
 
-  function handleComplaintSubmit(event) {
+  async function handleComplaintSubmit(event) {
     event.preventDefault();
+    if (session?.role !== 'citizen') return;
 
-    if (!session || session.role !== 'citizen') {
-      return;
+    try {
+      const res = await fetch('http://localhost:5000/api/complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          citizenName: session.name,
+          citizenPhone: session.phone,
+          title: complaintForm.title.trim(),
+          type: complaintForm.type,
+          location: complaintForm.location.trim(),
+          description: complaintForm.description.trim(),
+          images: complaintForm.images,
+          image: complaintForm.images[0] ?? '',
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Failed to submit complaint.');
+        return;
+      }
+
+      const newComplaint = await res.json();
+      setComplaints((prev) => [newComplaint, ...prev]);
+      setSelectedComplaintId(newComplaint.id);
+      setComplaintForm(EMPTY_COMPLAINT_FORM);
+    } catch (err) {
+      console.error('Submit complaint error:', err);
+      alert('Could not connect to database server.');
     }
-
-    const createdAt = getNowStamp();
-    const newComplaint = {
-      id: `CMP-${Date.now().toString().slice(-6)}`,
-      citizenName: session.name,
-      citizenPhone: session.phone,
-      title: complaintForm.title.trim(),
-      type: complaintForm.type,
-      location: complaintForm.location.trim(),
-      description: complaintForm.description.trim(),
-      images: complaintForm.images.length
-        ? complaintForm.images
-        : ['https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=900&q=80'],
-      image: complaintForm.images[0] ||
-        'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=900&q=80',
-      status: 'Submitted',
-      forwardedTo: 'Pending review',
-      createdAt,
-      updatedAt: createdAt,
-      updates: [
-        {
-          label: 'Submitted',
-          note: 'Complaint submitted by citizen.',
-          at: createdAt,
-        },
-      ],
-    };
-
-    const nextComplaints = [newComplaint, ...complaints];
-    setComplaints(nextComplaints);
-    setSelectedComplaintId(newComplaint.id);
-    setComplaintForm(emptyComplaintForm);
   }
 
-  function handleStatusChange(complaintId, nextStatus, forwardedTo) {
-    const stamp = getNowStamp();
-
-    setComplaints((currentComplaints) =>
-      currentComplaints.map((complaint) => {
-        if (complaint.id !== complaintId) {
-          return complaint;
+  async function handleStatusChange(complaintId, nextStatus, forwardedTo) {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/complaints/${complaintId}/status`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: nextStatus, forwardedTo }),
         }
+      );
 
-        return {
-          ...complaint,
-          status: nextStatus,
-          forwardedTo,
-          updatedAt: stamp,
-          updates: [
-            ...complaint.updates,
-            {
-              label: nextStatus,
-              note:
-                nextStatus === 'Forwarded'
-                  ? `Complaint forwarded to ${forwardedTo}.`
-                  : `Complaint marked as ${nextStatus.toLowerCase()}.`,
-              at: stamp,
-            },
-          ],
-        };
-      })
-    );
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Failed to update status.');
+        return;
+      }
+
+      const updated = await res.json();
+      setComplaints((prev) =>
+        prev.map((c) => (c.id === complaintId ? updated : c))
+      );
+    } catch (err) {
+      console.error('Update status error:', err);
+      alert('Could not connect to database server.');
+    }
+  }
+
+  async function handleComplaintDelete(complaintId) {
+    if (!window.confirm('Are you sure you want to delete this complaint?')) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/complaints/${complaintId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Failed to delete complaint.');
+        return;
+      }
+
+      setComplaints((prev) => {
+        const remaining = prev.filter((c) => c.id !== complaintId);
+        if (selectedComplaintId === complaintId) {
+          setSelectedComplaintId(remaining[0]?.id ?? '');
+        }
+        return remaining;
+      });
+    } catch (err) {
+      console.error('Delete complaint error:', err);
+      alert('Could not connect to database server.');
+    }
   }
 
   function logout() {
@@ -393,14 +358,10 @@ function App() {
     resetAuthForms();
   }
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="app-shell">
-      <Header
-        portal={portal}
-        setPortal={setPortal}
-        session={session}
-        logout={logout}
-      />
+      <Header portal={portal} setPortal={setPortal} session={session} logout={logout} />
 
       <main className="page-content">
         {session?.role === 'citizen' ? (
@@ -426,6 +387,7 @@ function App() {
             setSelectedComplaintId={setSelectedComplaintId}
             selectedComplaint={selectedComplaint}
             handleStatusChange={handleStatusChange}
+            handleComplaintDelete={handleComplaintDelete}
             authorityOptions={authorityOptions}
           />
         ) : (

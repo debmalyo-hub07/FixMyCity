@@ -11,6 +11,7 @@ export default function AdminDashboard({
   setSelectedComplaintId,
   selectedComplaint,
   handleStatusChange,
+  handleComplaintDelete,
   authorityOptions,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +20,9 @@ export default function AdminDashboard({
   const [showFilters, setShowFilters] = useState(false);
   const [mobileView, setMobileView] = useState('list'); // 'list' or 'detail'
   const [maximizedImage, setMaximizedImage] = useState(null);
+
+  const [forwardingComplaintId, setForwardingComplaintId] = useState(null);
+  const [selectedAuthority, setSelectedAuthority] = useState(authorityOptions[0]);
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -277,47 +281,110 @@ export default function AdminDashboard({
                           View History
                         </motion.button>
 
-                        <motion.button
-                          whileTap={{ scale: 0.96 }}
-                          type="button"
-                          className="admin-btn-primary"
-                          onClick={() =>
-                            handleStatusChange(complaint.id, 'In Review', 'Ward Office')
-                          }
-                          disabled={complaint.status === 'In Review'}
-                        >
-                          Mark In Review
-                        </motion.button>
+                        {/* Inline Status Actions in the Middle */}
+                        {forwardingComplaintId === complaint.id ? (
+                          <div className="inline-forward-panel">
+                            <select
+                              value={selectedAuthority}
+                              onChange={(e) => setSelectedAuthority(e.target.value)}
+                              className="inline-authority-select"
+                            >
+                              {authorityOptions.map((auth) => (
+                                <option key={auth} value={auth}>
+                                  {auth}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              className="admin-btn-action admin-btn-primary-small"
+                              onClick={() => {
+                                handleStatusChange(complaint.id, 'Forwarded', selectedAuthority);
+                                setForwardingComplaintId(null);
+                              }}
+                            >
+                              Assign
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-btn-action admin-btn-cancel-small"
+                              onClick={() => setForwardingComplaintId(null)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="inline-status-buttons">
+                            {complaint.status === 'Submitted' && (
+                              <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                type="button"
+                                className="admin-btn-action admin-btn-approve"
+                                onClick={() => handleStatusChange(complaint.id, 'In Review', '')}
+                              >
+                                Approve
+                              </motion.button>
+                            )}
+
+                            {(complaint.status === 'Submitted' || complaint.status === 'In Review') && (
+                              <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                type="button"
+                                className="admin-btn-action admin-btn-forward"
+                                onClick={() => {
+                                  setSelectedAuthority(authorityOptions[0]);
+                                  setForwardingComplaintId(complaint.id);
+                                }}
+                              >
+                                Forward
+                              </motion.button>
+                            )}
+
+                            {complaint.status === 'Forwarded' && (
+                              <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                type="button"
+                                className="admin-btn-action admin-btn-forward-change"
+                                onClick={() => {
+                                  setSelectedAuthority(complaint.forwardedTo || authorityOptions[0]);
+                                  setForwardingComplaintId(complaint.id);
+                                }}
+                              >
+                                Re-assign
+                              </motion.button>
+                            )}
+
+                            {complaint.status !== 'Resolved' && (
+                              <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                type="button"
+                                className="admin-btn-action admin-btn-solve"
+                                onClick={() => handleStatusChange(complaint.id, 'Resolved', '')}
+                              >
+                                Solve
+                              </motion.button>
+                            )}
+
+                            {complaint.status === 'Resolved' && (
+                              <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                type="button"
+                                className="admin-btn-action admin-btn-reopen"
+                                onClick={() => handleStatusChange(complaint.id, 'Submitted', '')}
+                              >
+                                Reopen
+                              </motion.button>
+                            )}
+                          </div>
+                        )}
 
                         <motion.button
                           whileTap={{ scale: 0.96 }}
                           type="button"
-                          className="admin-btn-ghost"
-                          onClick={() =>
-                            handleStatusChange(
-                              complaint.id,
-                              'Forwarded',
-                              authorityOptions[
-                                complaint.id.charCodeAt(complaint.id.length - 1) %
-                                  authorityOptions.length
-                              ]
-                            )
-                          }
-                          disabled={complaint.status === 'Forwarded' && complaint.forwardedTo !== 'Pending review'}
+                          className="admin-btn-delete"
+                          onClick={() => handleComplaintDelete(complaint.id)}
                         >
-                          Forward Authority
-                        </motion.button>
-
-                        <motion.button
-                          whileTap={{ scale: 0.96 }}
-                          type="button"
-                          className="admin-btn-success"
-                          onClick={() =>
-                            handleStatusChange(complaint.id, 'Resolved', complaint.forwardedTo)
-                          }
-                          disabled={complaint.status === 'Resolved'}
-                        >
-                          Mark Resolved
+                          Delete
                         </motion.button>
                       </div>
                     </div>

@@ -1461,6 +1461,26 @@ textarea {
 }
 .admin-btn-success:hover { background: #047857; }
 
+.admin-btn-delete {
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-btn-delete:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
 /* Disabled states */
 .admin-card-actions button:disabled {
   opacity: 0.45;
@@ -1869,6 +1889,210 @@ textarea {
 .lightbox-close-btn:hover {
   background: rgba(220, 38, 38, 0.9);
   transform: rotate(90deg);
+}
+
+/* Admin Status Manager UI Styles */
+.admin-status-manager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  width: 100%;
+}
+
+.status-select-wrapper,
+.authority-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.status-select-wrapper label,
+.authority-select-wrapper label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-align: left;
+}
+
+.status-select-field,
+.authority-select-field {
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-inner);
+  border: 1px solid var(--line);
+  background: var(--bg-surface-elevated, #ffffff);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 140px;
+}
+
+.status-select-field:focus,
+.authority-select-field:focus {
+  border-color: var(--brand);
+}
+
+.admin-status-save-btn {
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  background: var(--brand);
+  color: #ffffff;
+  transition: all 0.2s;
+  align-self: flex-end;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-status-save-btn:hover {
+  background: var(--brand-hover);
+}
+
+.admin-status-save-btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Inline Admin Status Action Buttons */
+.inline-status-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.admin-btn-action {
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.admin-btn-approve {
+  background: #ccfbf1;
+  color: #0f766e;
+  border: 1px solid rgba(13, 148, 136, 0.25);
+}
+.admin-btn-approve:hover {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.admin-btn-forward {
+  background: #e0e7ff;
+  color: #4338ca;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+}
+.admin-btn-forward:hover {
+  background: #4338ca;
+  color: #ffffff;
+}
+
+.admin-btn-forward-change {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid rgba(109, 40, 217, 0.25);
+}
+.admin-btn-forward-change:hover {
+  background: #6d28d9;
+  color: #ffffff;
+}
+
+.admin-btn-solve {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+.admin-btn-solve:hover {
+  background: #15803d;
+  color: #ffffff;
+}
+
+.admin-btn-reopen {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+.admin-btn-reopen:hover {
+  background: #b45309;
+  color: #ffffff;
+}
+
+/* Inline Forward/Assign Panel */
+.inline-forward-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-inner);
+  background: rgba(15, 118, 110, 0.04);
+  border: 1px dashed rgba(15, 118, 110, 0.25);
+}
+
+.inline-authority-select {
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-inner);
+  border: 1px solid var(--line);
+  background: var(--bg-surface-elevated, #ffffff);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 170px;
+}
+.inline-authority-select:focus {
+  border-color: var(--brand);
+}
+
+.admin-btn-primary-small {
+  background: var(--brand);
+  color: #ffffff;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-inner);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-btn-primary-small:hover {
+  background: var(--brand-hover);
+}
+
+.admin-btn-cancel-small {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.admin-btn-cancel-small:hover {
+  background: #dc2626;
+  color: #ffffff;
 }
 
 /* ── Motion settings for system accessibility ──────────────────── */
