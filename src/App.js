@@ -8,6 +8,7 @@ import AdminDashboard from './components/AdminDashboard';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const SESSION_KEY = 'fixmycity-session';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const complaintTypes = [
   'Road problem',
@@ -45,7 +46,7 @@ function readSession() {
 }
 
 async function fetchComplaints() {
-  const res = await fetch('http://localhost:5000/api/complaints');
+  const res = await fetch(`${API_BASE_URL}/api/complaints`);
   if (!res.ok) throw new Error('Failed to fetch complaints');
   return res.json();
 }
@@ -131,7 +132,7 @@ function App() {
     setAuthMessage('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -168,7 +169,7 @@ function App() {
     setAuthMessage('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,7 +268,7 @@ function App() {
     if (session?.role !== 'citizen') return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/complaints', {
+      const res = await fetch(`${API_BASE_URL}/api/complaints`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -301,7 +302,7 @@ function App() {
   async function handleStatusChange(complaintId, nextStatus, forwardedTo) {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/complaints/${complaintId}/status`,
+        `${API_BASE_URL}/api/complaints/${complaintId}/status`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -330,7 +331,7 @@ function App() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/complaints/${complaintId}`,
+        `${API_BASE_URL}/api/complaints/${complaintId}`,
         { method: 'DELETE' }
       );
 
