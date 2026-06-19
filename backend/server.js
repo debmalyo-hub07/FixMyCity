@@ -8,6 +8,7 @@ const jpeg = require('jpeg-js');
 require('dotenv').config();
 
 const User = require('./models/User');
+const Admin = require('./models/Admin');
 const Complaint = require('./models/Complaint');
 
 const app = express();
@@ -174,21 +175,28 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/FixMyCity')
 // Seed Initial Data function
 async function seedDatabase() {
   try {
-    // 1. Seed Users if empty
+    // 1. Seed Admin if empty
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      console.log('Seeding initial admin...');
+      const adminPasswordHash = await bcrypt.hash('admin123', 10);
+      const defaultAdmin = new Admin({
+        name: 'City Admin',
+        username: 'admin@fixmycity',
+        password: adminPasswordHash,
+        role: 'admin'
+      });
+      await defaultAdmin.save();
+      console.log('Admin seeded successfully.');
+    }
+
+    // 2. Seed Users (Citizens) if empty
     const userCount = await User.countDocuments();
     if (userCount === 0) {
-      console.log('Seeding initial users...');
-      
-      const adminPasswordHash = await bcrypt.hash('admin123', 10);
+      console.log('Seeding initial citizens...');
       const citizenPasswordHash = await bcrypt.hash('citizen123', 10);
 
       const initialUsers = [
-        {
-          name: 'City Admin',
-          username: 'admin@fixmycity',
-          password: adminPasswordHash,
-          role: 'admin'
-        },
         {
           name: 'Aarav Sen',
           phone: '9876543210',
@@ -206,7 +214,7 @@ async function seedDatabase() {
       ];
 
       await User.insertMany(initialUsers);
-      console.log('Users seeded successfully.');
+      console.log('Citizens seeded successfully.');
     }
 
     // 2. Seed Complaints if empty
@@ -330,8 +338,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ message: 'Mobile number/ID and password are required.' });
     }
 
-    // Find user by username (admin) or phone (citizen)
-    const user = await User.findOne({ $or: [ { username: identifier }, { phone: identifier } ] });
+    // Find user: check Admin collection first, then fall back to User collection (citizens)
+    let user = await Admin.findOne({ username: identifier });
+    if (!user) {
+      user = await User.findOne({ phone: identifier });
+    }
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
