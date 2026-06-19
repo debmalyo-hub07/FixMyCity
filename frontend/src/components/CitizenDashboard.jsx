@@ -63,8 +63,8 @@ export default function CitizenDashboard({
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
+    hidden: { opacity: 0, y: 20, scale: 0.98 },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 90, damping: 14 } },
   };
 
   return (
@@ -94,7 +94,7 @@ export default function CitizenDashboard({
 
       {/* Citizen Stats Row */}
       <motion.div className="stats-row-modern" variants={containerVariants}>
-        <motion.div className="stat-card-modern border-blue" variants={cardVariants} whileHover={{ y: -3 }}>
+        <motion.div className="stat-card-modern border-blue" variants={cardVariants}>
           <div className="stat-icon-wrapper bg-blue-soft text-blue">
             <ClipboardList size={22} />
           </div>
@@ -104,7 +104,7 @@ export default function CitizenDashboard({
           </div>
         </motion.div>
 
-        <motion.div className="stat-card-modern border-warning" variants={cardVariants} whileHover={{ y: -3 }}>
+        <motion.div className="stat-card-modern border-warning" variants={cardVariants}>
           <div className="stat-icon-wrapper bg-warning-soft text-warning">
             <Clock size={22} />
           </div>
@@ -114,7 +114,7 @@ export default function CitizenDashboard({
           </div>
         </motion.div>
 
-        <motion.div className="stat-card-modern border-success" variants={cardVariants} whileHover={{ y: -3 }}>
+        <motion.div className="stat-card-modern border-success" variants={cardVariants}>
           <div className="stat-icon-wrapper bg-success-soft text-success">
             <CheckCircle2 size={22} />
           </div>

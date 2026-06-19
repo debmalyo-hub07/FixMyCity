@@ -128,8 +128,7 @@ export default function ComplaintList({
                     damping: 18,
                     delay: Math.min(index * 0.05, 0.4) 
                   }}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   <div className="complaint-item-header">
                     <span className="complaint-id-tag">{complaint.id}</span>

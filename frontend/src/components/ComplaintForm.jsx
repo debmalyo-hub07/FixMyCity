@@ -95,8 +95,7 @@ export default function ComplaintForm({
           <motion.div
             className="file-upload-dragzone-compact"
             onClick={() => fileInputRef.current?.click()}
-            whileHover={{ scale: 0.99, borderColor: 'rgba(20, 184, 166, 0.4)' }}
-            whileTap={{ scale: 0.98 }}
+            whileTap={{ scale: 0.97 }}
           >
             <Upload size={20} className="uploader-icon" />
             <span>Select Photos</span>
