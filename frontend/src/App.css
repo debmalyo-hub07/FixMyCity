@@ -1336,11 +1336,11 @@ textarea {
   background: var(--panel-glass-solid);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-card);
-  overflow: hidden;
   box-shadow: var(--shadow-card);
   display: grid;
   grid-template-columns: 200px 1fr;
-  transition: all 0.3s var(--ease-out);
+  align-items: stretch;
+  transition: box-shadow 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 
 .admin-complaint-card-modern:hover {
@@ -1415,8 +1415,25 @@ textarea {
 .admin-card-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   gap: 0.55rem;
   margin-top: auto;
+}
+
+/* Status / forward group sits on its own full-width row */
+.admin-card-actions .inline-status-buttons,
+.admin-card-actions .inline-forward-panel {
+  order: 1;
+  flex-basis: 100%;
+  width: 100%;
+}
+
+/* View History + Delete share a separate bottom utility row */
+.admin-card-actions .admin-btn-secondary,
+.admin-card-actions .admin-btn-delete {
+  order: 2;
+  flex: 0 0 auto;
 }
 
 /* Action Buttons inside Card */
@@ -1651,6 +1668,16 @@ textarea {
     scroll-snap-align: start;
     padding: 0.95rem;
   }
+
+  /* On narrow cards give status buttons full-width stacked tap targets */
+  .inline-status-buttons .admin-btn-action {
+    flex: 1 1 100%;
+  }
+
+  .inline-forward-panel .admin-btn-primary-small,
+  .inline-forward-panel .admin-btn-cancel-small {
+    flex: 1 1 auto;
+  }
 }
 
 /* ── Multi-image Upload & Lightbox Styles ────────────────────────── */
@@ -1802,6 +1829,7 @@ textarea {
   cursor: pointer;
   overflow: hidden;
   border-right: 1px solid var(--line-color);
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
 }
 
 .admin-card-img-overlay {
@@ -1970,7 +1998,13 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
+}
+
+.inline-status-buttons .admin-btn-action {
+  flex: 1 1 auto;
+  min-width: 110px;
 }
 
 .admin-btn-action {
@@ -2042,7 +2076,8 @@ textarea {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.2rem 0.4rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
   border-radius: var(--radius-inner);
   background: rgba(15, 118, 110, 0.04);
   border: 1px dashed rgba(15, 118, 110, 0.25);
@@ -2058,7 +2093,9 @@ textarea {
   font-weight: 600;
   outline: none;
   transition: border-color 0.2s;
-  min-width: 170px;
+  flex: 1 1 170px;
+  min-width: 0;
+  max-width: 100%;
 }
 .inline-authority-select:focus {
   border-color: var(--brand);

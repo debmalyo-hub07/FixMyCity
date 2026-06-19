@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Clock, ClipboardList, Search, SlidersHorizontal, MapPin, Tag, Briefcase, Maximize2 } from 'lucide-react';
+import { Users, Clock, ClipboardList, Search, SlidersHorizontal, MapPin, Tag, Briefcase, Maximize2, AlertTriangle } from 'lucide-react';
 import ComplaintDetail from './ComplaintDetail';
 
 export default function AdminDashboard({
@@ -262,11 +262,34 @@ export default function AdminDashboard({
                         </span>
                         <span className="meta-tag-chip">
                           <Briefcase size={12} style={{ marginRight: '4px' }} />
-                          Assigned: {complaint.forwardedTo}
+                          {complaint.forwardedTo ? `Assigned: ${complaint.forwardedTo}` : 'Unassigned'}
                         </span>
                       </div>
 
                       <p className="admin-card-desc">{complaint.description}</p>
+
+                      {complaint.imageCheck?.matched === false && (
+                        <div
+                          className="image-flag-chip"
+                          title={complaint.imageCheck?.note || 'Image may not match the selected category'}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            marginBottom: '0.5rem',
+                            padding: '3px 8px',
+                            borderRadius: '999px',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            color: '#92400e',
+                            background: '#fef3c7',
+                            border: '1px solid #fcd34d',
+                          }}
+                        >
+                          <AlertTriangle size={12} />
+                          Image flagged
+                        </div>
+                      )}
 
                       <div className="admin-card-actions">
                         <motion.button
@@ -405,6 +428,37 @@ export default function AdminDashboard({
           className={`admin-right-panel card-panel-modern ${mobileView === 'detail' ? '' : 'mobile-hidden'}`} 
           variants={cardVariants}
         >
+          {selectedComplaint?.imageCheck?.matched === false && (
+            <motion.div
+              className="image-flag-banner"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 120 }}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.65rem',
+                marginBottom: '1rem',
+                padding: '0.85rem 1rem',
+                borderRadius: '12px',
+                color: '#92400e',
+                background: '#fffbeb',
+                border: '1px solid #fcd34d',
+              }}
+            >
+              <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ fontSize: '0.85rem', lineHeight: 1.45 }}>
+                <strong>
+                  Image may not match category
+                  {selectedComplaint.imageCheck?.note ? ` — ${selectedComplaint.imageCheck.note}` : ''}
+                </strong>
+                <div style={{ marginTop: '2px', fontWeight: 500 }}>
+                  Please verify the photo before resolving.
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           <ComplaintDetail
             selectedComplaint={selectedComplaint}
             showFullDetails={true}

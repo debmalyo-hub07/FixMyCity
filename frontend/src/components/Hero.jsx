@@ -228,10 +228,6 @@ export default function Hero({
                       >
                         Log In
                       </motion.button>
-                      
-                      <div className="demo-credentials">
-                        <strong>Demo:</strong> 9876543210 / citizen123
-                      </div>
                     </motion.form>
                   ) : (
                     <motion.form
@@ -346,7 +342,7 @@ export default function Hero({
                     <input
                       required
                       type="text"
-                      placeholder="admin@fixmycity"
+                      placeholder="Enter Admin ID"
                       value={loginForm.phone}
                       onChange={(e) =>
                         setLoginForm((prev) => ({ ...prev, phone: e.target.value }))
@@ -379,10 +375,6 @@ export default function Hero({
                 >
                   Admin Access Login
                 </motion.button>
-
-                <div className="demo-credentials">
-                  <strong>Demo:</strong> admin@fixmycity / admin123
-                </div>
               </motion.form>
             )}
           </AnimatePresence>

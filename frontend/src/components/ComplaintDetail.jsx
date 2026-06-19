@@ -90,7 +90,7 @@ export default function ComplaintDetail({ selectedComplaint, showFullDetails = t
               </span>
               <span className="detail-tag-chip">
                 <ShieldAlert size={13} style={{ marginRight: '6px', strokeWidth: 2.2 }} />
-                Forwarded: {selectedComplaint.forwardedTo}
+                {selectedComplaint.forwardedTo ? `Forwarded: ${selectedComplaint.forwardedTo}` : 'Unassigned'}
               </span>
             </div>
           </div>

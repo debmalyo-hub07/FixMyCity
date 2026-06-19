@@ -94,10 +94,12 @@ function App() {
     [complaints, session]
   );
 
-  const selectedComplaint = useMemo(
-    () => complaints.find((c) => c.id === selectedComplaintId) ?? complaints[0],
-    [complaints, selectedComplaintId]
-  );
+  const selectedComplaint = useMemo(() => {
+    // Citizens may only fall back to their own complaints; admins see all.
+    const scope =
+      session?.role === 'citizen' ? currentCitizenComplaints : complaints;
+    return scope.find((c) => c.id === selectedComplaintId) ?? scope[0];
+  }, [complaints, currentCitizenComplaints, selectedComplaintId, session]);
 
   const stats = useMemo(() => {
     const citizens = new Set(complaints.map((c) => c.citizenPhone)).size;
@@ -141,6 +143,7 @@ function App() {
           'ngrok-skip-browser-warning': 'true'
         },
         body: JSON.stringify({
+          identifier: loginForm.phone.trim(),
           phone: loginForm.phone.trim(),
           password: loginForm.password,
         }),
