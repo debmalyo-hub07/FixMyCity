@@ -14,7 +14,6 @@ import {
   Trash2,
   TrendingUp,
   TriangleAlert,
-  Wind,
   X,
   Zap,
   Phone,
@@ -85,14 +84,32 @@ export default function Hero({
     }
   ];
 
-  // Categories definition
+  // Categories definition (main four only, counts computed dynamically from complaints database)
   const categories = [
-    { icon: Construction, label: 'Potholes & Roads', count: 12480, color: 'bg-orange-soft' },
-    { icon: Lightbulb, label: 'Street Lighting', count: 8341, color: 'bg-yellow-soft' },
-    { icon: Trash2, label: 'Waste & Litter', count: 7920, color: 'bg-green-soft' },
-    { icon: Droplets, label: 'Flooding & Drains', count: 5640, color: 'bg-blue-soft-new' },
-    { icon: Wind, label: 'Air & Noise', count: 3870, color: 'bg-purple-soft-new' },
-    { icon: MapPin, label: 'Damaged Signage', count: 4210, color: 'bg-red-soft-new' }
+    { 
+      icon: Construction, 
+      label: 'Potholes & Roads', 
+      count: 12480 + (complaints || []).filter(c => c.type === 'Potholes' || c.type === 'Road problem').length, 
+      color: 'bg-orange-soft' 
+    },
+    { 
+      icon: Lightbulb, 
+      label: 'Street Lighting', 
+      count: 8341 + (complaints || []).filter(c => c.type === 'Others' && (c.title.toLowerCase().includes('light') || c.description.toLowerCase().includes('light'))).length, 
+      color: 'bg-yellow-soft' 
+    },
+    { 
+      icon: Trash2, 
+      label: 'Waste & Litter', 
+      count: 7920 + (complaints || []).filter(c => c.type === 'Others' && (c.title.toLowerCase().includes('waste') || c.title.toLowerCase().includes('litter') || c.description.toLowerCase().includes('waste') || c.description.toLowerCase().includes('litter'))).length, 
+      color: 'bg-green-soft' 
+    },
+    { 
+      icon: Droplets, 
+      label: 'Flooding & Drains', 
+      count: 5640 + (complaints || []).filter(c => c.type === 'Drainage problem').length, 
+      color: 'bg-blue-soft-new' 
+    }
   ];
 
   // Mock initial reports from Figma prototype
@@ -424,7 +441,7 @@ export default function Hero({
                     <IconComponent size={24} />
                   </div>
                   <h3>{cat.label}</h3>
-                  <span className="font-mono">{(cat.count + (idx === 0 ? complaints.length : 0)).toLocaleString()} reports</span>
+                  <span className="font-mono">{cat.count.toLocaleString()} reports</span>
                 </div>
               );
             })}
