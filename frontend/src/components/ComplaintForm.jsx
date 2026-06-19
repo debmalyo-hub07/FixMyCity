@@ -2,22 +2,19 @@ import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trash2,
-  Send,
   ImagePlus,
-  Type,
+  Hash,
   MapPin,
-  AlignLeft,
-  Construction,
-  CircleDashed,
   Droplets,
-  CircleHelp,
+  MoreHorizontal,
+  ChevronRight,
 } from 'lucide-react';
 
 const TYPE_META = {
-  'Road problem': { icon: Construction, hint: 'Cracks, broken stretches, debris' },
-  Potholes: { icon: CircleDashed, hint: 'Sunken patches, road craters' },
-  'Drainage problem': { icon: Droplets, hint: 'Clogged, overflow, stagnant water' },
-  Others: { icon: CircleHelp, hint: 'Anything else civic-related' },
+  'Road problem': { icon: Hash, hint: 'Cracks, broken stretches, debris' },
+  Potholes: { icon: MapPin, hint: 'Sunken patches, road craters' },
+  'Drainage problem': { icon: Droplets, hint: 'Clogged overflow, drainage water' },
+  Others: { icon: MoreHorizontal, hint: 'Plumbing, gas etc related' },
 };
 
 const MAX_DESC = 400;
@@ -42,62 +39,21 @@ export default function ComplaintForm({
   };
 
   const descLen = (complaintForm.description || '').length;
-  
-  const formGridVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.12 }
-    }
-  };
-
-  const formColVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { type: 'spring', stiffness: 100, damping: 16 } 
-    }
-  };
-
-  const categoryContainerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
-  };
-
-  const categoryItemVariants = {
-    hidden: { opacity: 0, y: 10, scale: 0.96 },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: { type: 'spring', stiffness: 120, damping: 15 } 
-    }
-  };
 
   return (
-    <motion.form 
-      className="cf-form" 
-      onSubmit={handleComplaintSubmit}
-      variants={formGridVariants}
-      initial="hidden"
-      animate="show"
-    >
-      <div className="cf-form-grid">
-        <motion.div className="cf-form-col" variants={formColVariants}>
+    <form className="cf-form-new" onSubmit={handleComplaintSubmit}>
+      <div className="cf-grid-new">
+        {/* Left Column */}
+        <div className="cf-col-new">
           {/* Title */}
-          <div className="cf-field">
-            <label className="cf-label" htmlFor="cf-title">
-              <Type size={14} /> Problem Title
+          <div className="cf-field-new">
+            <label className="cf-label-new">
+              Problem Title *
             </label>
             <input
-              id="cf-title"
               required
               type="text"
-              className="cf-input"
+              className="cf-input-new"
               placeholder="e.g. Large pothole near market gate"
               value={complaintForm.title}
               onChange={(e) =>
@@ -106,58 +62,47 @@ export default function ComplaintForm({
             />
           </div>
 
-          {/* Category as visual picker */}
-          <div className="cf-field" style={{ marginTop: '1.25rem' }}>
-            <label className="cf-label">
-              <Construction size={14} /> Category
+          {/* Category Visual Grid */}
+          <div className="cf-field-new" style={{ marginTop: '20px' }}>
+            <label className="cf-label-new">
+              Category
             </label>
-            <motion.div 
-              className="cf-category-grid" 
-              role="radiogroup" 
-              aria-label="Complaint category"
-              variants={categoryContainerVariants}
-            >
+            <div className="cf-category-picker-grid">
               {complaintTypes.map((type) => {
-                const meta = TYPE_META[type] || { icon: CircleHelp, hint: '' };
+                const meta = TYPE_META[type] || { icon: MoreHorizontal, hint: '' };
                 const Icon = meta.icon;
                 const active = complaintForm.type === type;
                 return (
-                  <motion.button
+                  <button
                     key={type}
                     type="button"
-                    role="radio"
-                    aria-checked={active}
-                    className={`cf-category-card ${active ? 'is-active' : ''}`}
+                    className={`cf-category-picker-card ${active ? 'active' : ''}`}
                     onClick={() =>
                       setComplaintForm((current) => ({ ...current, type }))
                     }
-                    variants={categoryItemVariants}
-                    whileHover={{ scale: 1.02, y: -3 }}
-                    whileTap={{ scale: 0.97 }}
                   >
-                    <span className="cf-category-icon">
+                    <span className="cf-cat-card-icon-wrapper">
                       <Icon size={18} />
                     </span>
-                    <span className="cf-category-text">
+                    <span className="cf-cat-card-text">
                       <strong>{type}</strong>
                       <small>{meta.hint}</small>
                     </span>
-                  </motion.button>
+                  </button>
                 );
               })}
-            </motion.div>
+            </div>
           </div>
 
           {/* Location */}
-          <div className="cf-field" style={{ marginTop: '1.25rem' }}>
-            <label className="cf-label" htmlFor="cf-location">
-              <MapPin size={14} /> Exact Location
+          <div className="cf-field-new" style={{ marginTop: '20px' }}>
+            <label className="cf-label-new">
+              Exact Location
             </label>
             <input
-              id="cf-location"
               required
               type="text"
-              className="cf-input"
+              className="cf-input-new"
               placeholder="Street, landmark, ward, area"
               value={complaintForm.location}
               onChange={(e) =>
@@ -165,36 +110,37 @@ export default function ComplaintForm({
               }
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div className="cf-form-col" variants={formColVariants}>
+        {/* Right Column */}
+        <div className="cf-col-new">
           {/* Description */}
-          <div className="cf-field">
-            <label className="cf-label" htmlFor="cf-desc">
-              <AlignLeft size={14} /> Detailed Description
+          <div className="cf-field-new">
+            <label className="cf-label-new">
+              Detailed Description *
             </label>
-            <textarea
-              id="cf-desc"
-              required
-              rows="4"
-              maxLength={MAX_DESC}
-              className="cf-input cf-textarea"
-              placeholder="Explain the issue, how long it has been there, and any safety hazards."
-              value={complaintForm.description}
-              onChange={(e) =>
-                setComplaintForm((current) => ({ ...current, description: e.target.value }))
-              }
-              style={{ minHeight: '136px' }}
-            />
-            <span className={`cf-char-count ${descLen > MAX_DESC * 0.9 ? 'is-warn' : ''}`}>
-              {descLen}/{MAX_DESC}
-            </span>
+            <div style={{ position: 'relative' }}>
+              <textarea
+                required
+                rows="5"
+                maxLength={MAX_DESC}
+                className="cf-textarea-new"
+                placeholder="Explain the issue, how long it has been there, and any safety hazards."
+                value={complaintForm.description}
+                onChange={(e) =>
+                  setComplaintForm((current) => ({ ...current, description: e.target.value }))
+                }
+              />
+              <span className="cf-desc-char-limit font-mono">
+                {descLen}/{MAX_DESC}
+              </span>
+            </div>
           </div>
 
-          {/* Image upload */}
-          <div className="cf-field" style={{ marginTop: '1.25rem' }}>
-            <label className="cf-label">
-              <ImagePlus size={14} /> Attach Picture Proof
+          {/* Upload Proof */}
+          <div className="cf-field-new" style={{ marginTop: '20px' }}>
+            <label className="cf-label-new">
+              Attach Picture Proof
             </label>
             <input
               type="file"
@@ -205,70 +151,59 @@ export default function ComplaintForm({
               style={{ display: 'none' }}
             />
 
-            <motion.button
+            <button
               type="button"
-              className="cf-dropzone"
+              className="cf-upload-dropzone-new"
               onClick={() => fileInputRef.current?.click()}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <span className="cf-dropzone-icon">
-                <ImagePlus size={22} />
-              </span>
-              <span className="cf-dropzone-text">
-                <strong>Tap to upload photos</strong>
-                <small>One or more files · clearer proof, faster action</small>
-              </span>
-            </motion.button>
+              <div className="cf-upload-icon-wrapper">
+                <ImagePlus size={22} color="#8a8a8a" />
+              </div>
+              <strong>Tap to upload photos</strong>
+              <small>ONE PHOTO MAX - CITATION-PROOF, FASTER ACTION</small>
+            </button>
 
+            {/* Uploaded Thumbnails */}
             <AnimatePresence>
               {complaintForm.images && complaintForm.images.length > 0 && (
                 <motion.div
-                  className="cf-thumb-grid"
+                  className="cf-thumbnails-row-new"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  style={{ marginTop: '0.75rem' }}
                 >
                   {complaintForm.images.map((imgUrl, index) => (
                     <motion.div
                       key={`${index}-${imgUrl.slice(-20)}`}
-                      className="cf-thumb"
+                      className="cf-thumbnail-box-new"
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       transition={{ type: 'spring', stiffness: 120, damping: 15 }}
                     >
-                      <img src={imgUrl} alt={`Preview ${index + 1}`} className="cf-thumb-img" />
-                      <motion.button
+                      <img src={imgUrl} alt={`Preview ${index + 1}`} />
+                      <button
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="cf-thumb-remove"
-                        whileHover={{ scale: 1.12 }}
-                        whileTap={{ scale: 0.9 }}
+                        className="cf-thumbnail-delete-btn"
                         title="Delete photo"
                       >
                         <Trash2 size={12} />
-                      </motion.button>
+                      </button>
                     </motion.div>
                   ))}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-
-          <motion.button
-            type="submit"
-            className="cf-submit"
-            whileHover={{ scale: 1.015 }}
-            whileTap={{ scale: 0.98 }}
-            style={{ marginTop: '1.75rem' }}
-          >
-            <Send size={16} />
-            Submit Complaint
-          </motion.button>
-        </motion.div>
+        </div>
       </div>
-    </motion.form>
+
+      {/* Submit Button */}
+      <button type="submit" className="cf-submit-btn-new">
+        Submit Complaint
+        <ChevronRight size={16} style={{ marginLeft: '6px' }} />
+      </button>
+    </form>
   );
 }

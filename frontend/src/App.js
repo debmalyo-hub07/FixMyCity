@@ -382,7 +382,7 @@ function App() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="app-shell">
-      <Header portal={portal} setPortal={setPortal} session={session} logout={logout} />
+      {session && <Header portal={portal} setPortal={setPortal} session={session} logout={logout} />}
 
       <main className="page-content">
         {session?.role === 'citizen' ? (
@@ -427,6 +427,7 @@ function App() {
             handleCitizenRegister={handleCitizenRegister}
             handleAdminLogin={handleAdminLogin}
             resetAuthForms={resetAuthForms}
+            complaints={complaints}
           />
         )}
       </main>

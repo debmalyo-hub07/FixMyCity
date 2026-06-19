@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
   CheckCircle2,
-  ClipboardList,
+  FileText,
   PlusCircle,
   BarChart2,
   LogOut,
@@ -50,10 +50,6 @@ export default function CitizenDashboard({
     resolved: currentCitizenComplaints.filter((item) => item.status === 'Resolved').length,
   };
 
-  const resolveRate = citizenStats.total
-    ? Math.round((citizenStats.resolved / citizenStats.total) * 100)
-    : 0;
-
   const initials = (session.name || 'U')
     .split(' ')
     .map((w) => w[0])
@@ -82,12 +78,6 @@ export default function CitizenDashboard({
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 90, damping: 14 } },
   };
 
-  const stats = [
-    { key: 'total', label: 'Your Complaints', value: citizenStats.total, Icon: ClipboardList, tone: 'blue' },
-    { key: 'open', label: 'Open Cases', value: citizenStats.open, Icon: Clock, tone: 'warning' },
-    { key: 'resolved', label: 'Resolved', value: citizenStats.resolved, Icon: CheckCircle2, tone: 'success' },
-  ];
-
   return (
     <motion.div
       className="cz-dashboard"
@@ -95,61 +85,71 @@ export default function CitizenDashboard({
       animate="show"
       variants={containerVariants}
     >
-      {/* Hero header */}
+      {/* Hero headerwelcome box */}
       <motion.div className="cz-hero" variants={cardVariants}>
-        <div className="cz-hero-glow" aria-hidden="true" />
+        {/* Background rotating outline boxes */}
+        <div className="cz-hero-deco-box-1" />
+        <div className="cz-hero-deco-box-2" />
+
         <div className="cz-hero-main">
           <div className="cz-avatar" aria-hidden="true">{initials}</div>
           <div className="cz-hero-info">
             <span className="cz-eyebrow">Citizen Panel</span>
             <h2>Welcome back, {session.name}</h2>
-            <p>File civic complaints with photo proof and track live status updates.</p>
+            <p>File your complaints with photo proof and track live status updates.</p>
           </div>
         </div>
-        <motion.button
+        
+        <button
           type="button"
           className="cz-logout"
           onClick={logout}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
         >
-          <LogOut size={15} />
+          <LogOut size={14} style={{ marginRight: '6px' }} />
           Sign Out
-        </motion.button>
+        </button>
       </motion.div>
 
-      {/* Stats */}
-      <motion.div className="cz-stats" variants={containerVariants}>
-        {stats.map(({ key, label, value, Icon, tone }) => (
-          <motion.div
-            key={key}
-            className={`cz-stat cz-tone-${tone}`}
-            variants={cardVariants}
-            whileHover={{ y: -4 }}
-          >
-            <span className="cz-stat-icon">
-              <Icon size={20} />
-            </span>
-            <div className="cz-stat-body">
-              <h3>{value}</h3>
-              <span>{label}</span>
-            </div>
-            {key === 'resolved' && citizenStats.total > 0 && (
-              <div className="cz-stat-ring" style={{ '--p': resolveRate }} title={`${resolveRate}% resolved`}>
-                <span>{resolveRate}%</span>
-              </div>
-            )}
-          </motion.div>
-        ))}
+      {/* 3-column stats row */}
+      <motion.div className="cz-stats-row" variants={cardVariants}>
+        <div className="cz-stat-col tone-blue">
+          <div className="cz-stat-icon-wrapper">
+            <FileText size={20} color="#1A2438" />
+          </div>
+          <div className="cz-stat-text-group">
+            <h3>{citizenStats.total}</h3>
+            <span>Your Complaints</span>
+          </div>
+        </div>
+
+        <div className="cz-stat-col tone-warning">
+          <div className="cz-stat-icon-wrapper">
+            <Clock size={20} color="#E85D26" />
+          </div>
+          <div className="cz-stat-text-group">
+            <h3>{citizenStats.open}</h3>
+            <span>Open Cases</span>
+          </div>
+        </div>
+
+        <div className="cz-stat-col tone-success">
+          <div className="cz-stat-icon-wrapper">
+            <CheckCircle2 size={20} color="#22c55e" />
+          </div>
+          <div className="cz-stat-text-group">
+            <h3>{citizenStats.resolved}</h3>
+            <span>Resolved</span>
+          </div>
+        </div>
       </motion.div>
 
-      {/* Segmented tab switch (all screen sizes) */}
-      <div className="cz-tabs" role="tablist">
+      {/* Flat Underlined Tab Selectors */}
+      <div className="cz-flat-tabs" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'file'}
-          className={`cz-tab ${activeTab === 'file' ? 'is-active' : ''}`}
+          className={`cz-flat-tab ${activeTab === 'file' ? 'active' : ''}`}
           onClick={() => setActiveTab('file')}
         >
           <PlusCircle size={16} />
@@ -159,71 +159,78 @@ export default function CitizenDashboard({
           type="button"
           role="tab"
           aria-selected={activeTab === 'track'}
-          className={`cz-tab ${activeTab === 'track' ? 'is-active' : ''}`}
+          className={`cz-flat-tab ${activeTab === 'track' ? 'active' : ''}`}
           onClick={() => setActiveTab('track')}
         >
           <BarChart2 size={16} />
           Track Status{citizenStats.total > 0 ? ` (${citizenStats.total})` : ''}
         </button>
-        <motion.span
-          className="cz-tab-indicator"
-          animate={{ x: activeTab === 'file' ? '0%' : '100%' }}
-          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-        />
       </div>
 
       {/* Work area */}
-      <div className={`cz-work ${activeTab === 'file' ? 'view-file' : 'view-track'}`}>
-        {/* File complaint */}
-        <motion.section
-          className={`cz-panel cz-panel-file ${activeTab === 'file' ? '' : 'cz-hidden'}`}
-          variants={cardVariants}
-        >
-          <div className="cz-panel-head">
-            <h3>File a New Complaint</h3>
-            <p>Describe the issue and give the exact location to speed up routing.</p>
-          </div>
-          <ComplaintForm
-            complaintForm={complaintForm}
-            setComplaintForm={setComplaintForm}
-            complaintTypes={complaintTypes}
-            handleComplaintImages={handleComplaintImages}
-            handleComplaintSubmit={handleFormSubmitWrapped}
-          />
-        </motion.section>
+      <div className={`cz-work-area ${activeTab === 'file' ? 'view-file' : 'view-track'}`}>
+        {activeTab === 'track' && currentCitizenComplaints.length === 0 ? (
+          <motion.div className="cz-track-empty-state" variants={cardVariants}>
+            <div className="cz-empty-icon-box">
+              <Clock size={32} color="#1A2438" />
+            </div>
+            <h2>No Complaints Yet</h2>
+            <p>Once you file a complaint, you can track its live status here.</p>
+          </motion.div>
+        ) : (
+          <>
+            {/* File complaint */}
+            <motion.section
+              className={`cz-panel cz-panel-file ${activeTab === 'file' ? '' : 'cz-hidden'}`}
+              variants={cardVariants}
+            >
+              <div className="cz-panel-head">
+                <h3>File a New Complaint</h3>
+                <p>Describe the issue and give the exact location to speed up routing.</p>
+              </div>
+              <ComplaintForm
+                complaintForm={complaintForm}
+                setComplaintForm={setComplaintForm}
+                complaintTypes={complaintTypes}
+                handleComplaintImages={handleComplaintImages}
+                handleComplaintSubmit={handleFormSubmitWrapped}
+              />
+            </motion.section>
 
-        {/* Track: list */}
-        <motion.section
-          className={`cz-panel cz-panel-list ${
-            activeTab === 'track' && mobileTrackView === 'list' ? '' : 'cz-hidden-mobile'
-          } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
-          variants={cardVariants}
-        >
-          <div className="cz-panel-head">
-            <h3>Track Filed Reports</h3>
-            <p>Select a complaint to watch its progress updates.</p>
-          </div>
-          <ComplaintList
-            complaints={currentCitizenComplaints}
-            selectedComplaintId={selectedComplaintId}
-            setSelectedComplaintId={handleSelectComplaint}
-          />
-        </motion.section>
+            {/* Track: list */}
+            <motion.section
+              className={`cz-panel cz-panel-list ${
+                activeTab === 'track' && mobileTrackView === 'list' ? '' : 'cz-hidden-mobile'
+              } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
+              variants={cardVariants}
+            >
+              <div className="cz-panel-head">
+                <h3>Track Filed Reports</h3>
+                <p>Select a complaint to watch its progress updates.</p>
+              </div>
+              <ComplaintList
+                complaints={currentCitizenComplaints}
+                selectedComplaintId={selectedComplaintId}
+                setSelectedComplaintId={handleSelectComplaint}
+              />
+            </motion.section>
 
-        {/* Track: detail */}
-        <motion.section
-          className={`cz-panel cz-panel-detail ${
-            activeTab === 'track' && mobileTrackView === 'detail' ? '' : 'cz-hidden-mobile'
-          } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
-          variants={cardVariants}
-        >
-          <ComplaintDetail
-            selectedComplaint={selectedComplaint}
-            showFullDetails={true}
-            onBackToList={() => setMobileTrackView('list')}
-            onImageClick={setMaximizedImage}
-          />
-        </motion.section>
+            {/* Track: detail */}
+            <motion.section
+              className={`cz-panel cz-panel-detail ${
+                activeTab === 'track' && mobileTrackView === 'detail' ? '' : 'cz-hidden-mobile'
+              } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
+              variants={cardVariants}
+            >
+              <ComplaintDetail
+                selectedComplaint={selectedComplaint}
+                showFullDetails={true}
+                onBackToList={() => setMobileTrackView('list')}
+                onImageClick={setMaximizedImage}
+              />
+            </motion.section>
+          </>
+        )}
       </div>
 
       {/* Lightbox */}

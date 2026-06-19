@@ -5,15 +5,15 @@ import { FileText, Eye, Send, CheckCircle2 } from 'lucide-react';
 const getStatusConfig = (label) => {
   switch (label) {
     case 'Submitted':
-      return { icon: FileText, color: 'status-submitted-badge', dotBg: '#3b82f6' };
+      return { icon: FileText, color: 'status-submitted-badge-new', dotBg: '#2563eb' };
     case 'In Review':
-      return { icon: Eye, color: 'status-in-review-badge', dotBg: '#f59e0b' };
+      return { icon: Eye, color: 'status-in-review-badge-new', dotBg: '#E85D26' };
     case 'Forwarded':
-      return { icon: Send, color: 'status-forwarded-badge', dotBg: '#0f766e' };
+      return { icon: Send, color: 'status-forwarded-badge-new', dotBg: '#ea580c' };
     case 'Resolved':
-      return { icon: CheckCircle2, color: 'status-resolved-badge', dotBg: '#16a34a' };
+      return { icon: CheckCircle2, color: 'status-resolved-badge-new', dotBg: '#16a34a' };
     default:
-      return { icon: FileText, color: 'status-submitted-badge', dotBg: '#3b82f6' };
+      return { icon: FileText, color: 'status-submitted-badge-new', dotBg: '#2563eb' };
   }
 };
 
@@ -43,14 +43,14 @@ export default function Timeline({ updates }) {
 
   return (
     <motion.div
-      className="timeline-container-modern"
+      className="timeline-container-modern-new"
       variants={container}
       initial="hidden"
       animate="show"
     >
-      <div className="timeline-line-modern">
+      <div className="timeline-line-modern-new">
         <motion.div
-          className="timeline-line-progress"
+          className="timeline-line-progress-new"
           initial={{ height: 0 }}
           animate={{ height: '100%' }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -64,12 +64,12 @@ export default function Timeline({ updates }) {
         return (
           <motion.div
             key={`${update.at}-${index}`}
-            className="timeline-item-modern"
+            className="timeline-item-modern-new"
             variants={itemAnim}
           >
-            <div className="timeline-dot-container">
+            <div className="timeline-dot-container-new">
               <motion.div
-                className="timeline-dot-outer-glow"
+                className="timeline-dot-outer-glow-new"
                 animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
                 transition={{
                   duration: 2.5,
@@ -83,21 +83,21 @@ export default function Timeline({ updates }) {
                 }}
               >
                 <div
-                  className="timeline-dot-inner-core"
+                  className="timeline-dot-inner-core-new"
                   style={{ backgroundColor: config.dotBg }}
                 />
               </motion.div>
             </div>
 
-            <div className="timeline-card-modern">
-              <div className="timeline-card-header">
-                <span className={`status-badge-pill ${config.color}`}>
-                  <Icon size={13} style={{ marginRight: '5px', strokeWidth: 2.5 }} />
+            <div className="timeline-card-modern-new">
+              <div className="timeline-card-header-new">
+                <span className={`status-badge-pill-new ${config.color}`}>
+                  <Icon size={12} style={{ marginRight: '5px' }} />
                   {update.label}
                 </span>
-                <span className="timeline-card-time">{update.at}</span>
+                <span className="timeline-card-time-new">{update.at}</span>
               </div>
-              <p className="timeline-card-note">{update.note}</p>
+              <p className="timeline-card-note-new">{update.note}</p>
             </div>
           </motion.div>
         );
