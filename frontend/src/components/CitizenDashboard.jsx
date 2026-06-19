@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, CheckCircle2, ClipboardList, PlusCircle, BarChart2 } from 'lucide-react';
+import {
+  Clock,
+  CheckCircle2,
+  ClipboardList,
+  PlusCircle,
+  BarChart2,
+  LogOut,
+} from 'lucide-react';
 import ComplaintForm from './ComplaintForm';
 import ComplaintList from './ComplaintList';
 import ComplaintDetail from './ComplaintDetail';
@@ -43,6 +50,17 @@ export default function CitizenDashboard({
     resolved: currentCitizenComplaints.filter((item) => item.status === 'Resolved').length,
   };
 
+  const resolveRate = citizenStats.total
+    ? Math.round((citizenStats.resolved / citizenStats.total) * 100)
+    : 0;
+
+  const initials = (session.name || 'U')
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   const handleSelectComplaint = (id) => {
     setSelectedComplaintId(id);
     setMobileTrackView('detail');
@@ -56,105 +74,114 @@ export default function CitizenDashboard({
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 },
-    },
+    show: { opacity: 1, transition: { staggerChildren: 0.08 } },
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.98 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 90, damping: 14 } },
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 90, damping: 14 } },
   };
+
+  const stats = [
+    { key: 'total', label: 'Your Complaints', value: citizenStats.total, Icon: ClipboardList, tone: 'blue' },
+    { key: 'open', label: 'Open Cases', value: citizenStats.open, Icon: Clock, tone: 'warning' },
+    { key: 'resolved', label: 'Resolved', value: citizenStats.resolved, Icon: CheckCircle2, tone: 'success' },
+  ];
 
   return (
     <motion.div
-      className="dashboard-container-modern"
+      className="cz-dashboard"
       initial="hidden"
       animate="show"
       variants={containerVariants}
     >
-      {/* Dashboard Greeting Header */}
-      <motion.div className="dashboard-header-card citizen-header-theme" variants={cardVariants}>
-        <div className="header-greeting-info">
-          <span className="dashboard-eyebrow">Citizen Panel</span>
-          <h2>Welcome back, {session.name}</h2>
-          <p>Submit new civic complaints, upload image proof, and track live status updates.</p>
+      {/* Hero header */}
+      <motion.div className="cz-hero" variants={cardVariants}>
+        <div className="cz-hero-glow" aria-hidden="true" />
+        <div className="cz-hero-main">
+          <div className="cz-avatar" aria-hidden="true">{initials}</div>
+          <div className="cz-hero-info">
+            <span className="cz-eyebrow">Citizen Panel</span>
+            <h2>Welcome back, {session.name}</h2>
+            <p>File civic complaints with photo proof and track live status updates.</p>
+          </div>
         </div>
         <motion.button
           type="button"
-          className="logout-action-btn"
+          className="cz-logout"
           onClick={logout}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
         >
+          <LogOut size={15} />
           Sign Out
         </motion.button>
       </motion.div>
 
-      {/* Citizen Stats Row */}
-      <motion.div className="stats-row-modern" variants={containerVariants}>
-        <motion.div className="stat-card-modern border-blue" variants={cardVariants}>
-          <div className="stat-icon-wrapper bg-blue-soft text-blue">
-            <ClipboardList size={22} />
-          </div>
-          <div className="stat-text-wrapper">
-            <h3>{citizenStats.total}</h3>
-            <span>Your Complaints</span>
-          </div>
-        </motion.div>
-
-        <motion.div className="stat-card-modern border-warning" variants={cardVariants}>
-          <div className="stat-icon-wrapper bg-warning-soft text-warning">
-            <Clock size={22} />
-          </div>
-          <div className="stat-text-wrapper">
-            <h3>{citizenStats.open}</h3>
-            <span>Open Cases</span>
-          </div>
-        </motion.div>
-
-        <motion.div className="stat-card-modern border-success" variants={cardVariants}>
-          <div className="stat-icon-wrapper bg-success-soft text-success">
-            <CheckCircle2 size={22} />
-          </div>
-          <div className="stat-text-wrapper">
-            <h3>{citizenStats.resolved}</h3>
-            <span>Resolved</span>
-          </div>
-        </motion.div>
+      {/* Stats */}
+      <motion.div className="cz-stats" variants={containerVariants}>
+        {stats.map(({ key, label, value, Icon, tone }) => (
+          <motion.div
+            key={key}
+            className={`cz-stat cz-tone-${tone}`}
+            variants={cardVariants}
+            whileHover={{ y: -4 }}
+          >
+            <span className="cz-stat-icon">
+              <Icon size={20} />
+            </span>
+            <div className="cz-stat-body">
+              <h3>{value}</h3>
+              <span>{label}</span>
+            </div>
+            {key === 'resolved' && citizenStats.total > 0 && (
+              <div className="cz-stat-ring" style={{ '--p': resolveRate }} title={`${resolveRate}% resolved`}>
+                <span>{resolveRate}%</span>
+              </div>
+            )}
+          </motion.div>
+        ))}
       </motion.div>
 
-      {/* Mobile View Toggle Tabs */}
-      <div className="mobile-view-tabs">
+      {/* Segmented tab switch (all screen sizes) */}
+      <div className="cz-tabs" role="tablist">
         <button
           type="button"
-          className={`mobile-view-tab-btn ${activeTab === 'file' ? 'is-active' : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'file'}
+          className={`cz-tab ${activeTab === 'file' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('file')}
         >
-          <PlusCircle size={15} style={{ marginRight: '6px' }} />
+          <PlusCircle size={16} />
           File Report
         </button>
         <button
           type="button"
-          className={`mobile-view-tab-btn ${activeTab === 'track' ? 'is-active' : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'track'}
+          className={`cz-tab ${activeTab === 'track' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('track')}
         >
-          <BarChart2 size={15} style={{ marginRight: '6px' }} />
-          Track Status {citizenStats.total > 0 && `(${citizenStats.total})`}
+          <BarChart2 size={16} />
+          Track Status{citizenStats.total > 0 ? ` (${citizenStats.total})` : ''}
         </button>
+        <motion.span
+          className="cz-tab-indicator"
+          animate={{ x: activeTab === 'file' ? '0%' : '100%' }}
+          transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+        />
       </div>
 
-      {/* Dashboard Work Grid */}
-      <div className="dashboard-layout-grid">
-        {/* Left Side: Create Complaint */}
-        <motion.div
-          className={`dashboard-left-panel card-panel-modern ${activeTab === 'file' ? '' : 'mobile-hidden'}`}
+      {/* Work area */}
+      <div className={`cz-work ${activeTab === 'file' ? 'view-file' : 'view-track'}`}>
+        {/* File complaint */}
+        <motion.section
+          className={`cz-panel cz-panel-file ${activeTab === 'file' ? '' : 'cz-hidden'}`}
           variants={cardVariants}
         >
-          <div className="panel-title-header">
+          <div className="cz-panel-head">
             <h3>File a New Complaint</h3>
-            <p>Describe the issue and list the exact location to expedite routing.</p>
+            <p>Describe the issue and give the exact location to speed up routing.</p>
           </div>
           <ComplaintForm
             complaintForm={complaintForm}
@@ -163,27 +190,31 @@ export default function CitizenDashboard({
             handleComplaintImages={handleComplaintImages}
             handleComplaintSubmit={handleFormSubmitWrapped}
           />
-        </motion.div>
+        </motion.section>
 
-        {/* Center: List of Complaints */}
-        <motion.div
-          className={`dashboard-center-panel card-panel-modern ${activeTab === 'track' && mobileTrackView === 'list' ? '' : 'mobile-hidden'}`}
+        {/* Track: list */}
+        <motion.section
+          className={`cz-panel cz-panel-list ${
+            activeTab === 'track' && mobileTrackView === 'list' ? '' : 'cz-hidden-mobile'
+          } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
           variants={cardVariants}
         >
-          <div className="panel-title-header">
+          <div className="cz-panel-head">
             <h3>Track Filed Reports</h3>
-            <p>Select a complaint below to watch progress updates.</p>
+            <p>Select a complaint to watch its progress updates.</p>
           </div>
           <ComplaintList
             complaints={currentCitizenComplaints}
             selectedComplaintId={selectedComplaintId}
             setSelectedComplaintId={handleSelectComplaint}
           />
-        </motion.div>
+        </motion.section>
 
-        {/* Right Side: Detailed Timeline */}
-        <motion.div
-          className={`dashboard-right-panel card-panel-modern ${activeTab === 'track' && mobileTrackView === 'detail' ? '' : 'mobile-hidden'}`}
+        {/* Track: detail */}
+        <motion.section
+          className={`cz-panel cz-panel-detail ${
+            activeTab === 'track' && mobileTrackView === 'detail' ? '' : 'cz-hidden-mobile'
+          } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
           variants={cardVariants}
         >
           <ComplaintDetail
@@ -192,10 +223,10 @@ export default function CitizenDashboard({
             onBackToList={() => setMobileTrackView('list')}
             onImageClick={setMaximizedImage}
           />
-        </motion.div>
+        </motion.section>
       </div>
 
-      {/* Lightbox maximized photo viewer */}
+      {/* Lightbox */}
       <AnimatePresence>
         {maximizedImage && (
           <motion.div
