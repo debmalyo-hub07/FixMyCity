@@ -179,7 +179,7 @@ async function seedDatabase() {
     const adminCount = await Admin.countDocuments();
     if (adminCount === 0) {
       console.log('Seeding initial admin...');
-      const adminPasswordHash = await bcrypt.hash('admin123', 10);
+      const adminPasswordHash = await bcrypt.hash('rounak123', 10);
       const defaultAdmin = new Admin({
         name: 'City Admin',
         username: 'admin@fixmycity',
