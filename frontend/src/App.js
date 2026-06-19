@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import CitizenDashboard from './components/CitizenDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import ToastStack from './components/Toast';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -65,6 +66,23 @@ function App() {
   const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
   const [complaintForm, setComplaintForm] = useState(EMPTY_COMPLAINT_FORM);
   const [selectedComplaintId, setSelectedComplaintId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  // ── Toast helpers ────────────────────────────────────────────────────────
+  const toastIdRef = useRef(0);
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+  const pushToast = useCallback(
+    (message, type = 'info') => {
+      const id = ++toastIdRef.current;
+      setToasts((prev) => [...prev, { id, message, type }]);
+      setTimeout(() => dismissToast(id), 4200);
+    },
+    [dismissToast]
+  );
 
   // ── Bootstrap complaints on mount ──────────────────────────────────────────
   useEffect(() => {
@@ -73,7 +91,8 @@ function App() {
         setComplaints(data);
         if (data.length > 0) setSelectedComplaintId(data[0].id);
       })
-      .catch((err) => console.error('Error fetching complaints:', err));
+      .catch((err) => console.error('Error fetching complaints:', err))
+      .finally(() => setLoading(false));
   }, []);
 
   // ── Persist session ────────────────────────────────────────────────────────

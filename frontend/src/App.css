@@ -31,6 +31,12 @@
   --shadow-card: 0 16px 36px rgba(15, 30, 28, 0.05), 0 4px 12px rgba(15, 30, 28, 0.02);
   --shadow-hover: 0 24px 50px rgba(15, 30, 28, 0.12), 0 6px 16px rgba(15, 30, 28, 0.04);
   --shadow-active: 0 8px 16px rgba(15, 30, 28, 0.06);
+  --shadow-lg: 0 20px 48px rgba(15, 30, 28, 0.1), 0 6px 16px rgba(15, 30, 28, 0.04);
+
+  /* Aliases — several components reference these shorter names */
+  --line: var(--line-color);
+  --text: var(--text-main);
+  --bg-surface-elevated: #ffffff;
 
   --radius-inner: 0.8rem;
   --radius-card: 1.5rem;
@@ -2130,6 +2136,129 @@ textarea {
 .admin-btn-cancel-small:hover {
   background: #dc2626;
   color: #ffffff;
+}
+
+/* ── Icon tint utilities (used by metric/stat icons) ────────────── */
+.bg-blue-soft { background: var(--blue-soft); }
+.bg-warning-soft { background: var(--warning-soft); }
+.bg-success-soft { background: var(--success-soft); }
+.bg-brand-soft { background: var(--brand-soft); }
+.text-blue { color: var(--blue); }
+.text-warning { color: var(--warning); }
+.text-success { color: var(--success); }
+.text-brand { color: var(--brand); }
+
+/* ── Admin meta chips (Tag / Location / Assignment) ─────────────── */
+.meta-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(12, 24, 22, 0.04);
+  border: 1px solid var(--line-color);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Accessible focus rings (keyboard only) ─────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible,
+.nav-tab-btn:focus-visible,
+.portal-tab:focus-visible,
+.mode-btn:focus-visible,
+.filter-chip:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 2px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none; /* handled by box-shadow focus ring already */
+}
+
+/* ── Loading skeleton (initial complaint fetch) ─────────────────── */
+.app-loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+.app-loading-spinner {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 3px solid rgba(15, 118, 110, 0.15);
+  border-top-color: var(--brand);
+  animation: spin 0.8s linear infinite;
+}
+
+.app-loading-wrap p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Toast notifications (replace alert()) ──────────────────────── */
+.toast-stack {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+.toast-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-inner);
+  background: var(--panel-glass-solid);
+  box-shadow: var(--shadow-hover);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-left: 4px solid var(--brand);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.toast-item.toast-success { border-left-color: var(--success); }
+.toast-item.toast-success .toast-icon { color: var(--success); }
+.toast-item.toast-error { border-left-color: var(--danger); }
+.toast-item.toast-error .toast-icon { color: var(--danger); }
+.toast-item.toast-info { border-left-color: var(--blue); }
+.toast-item.toast-info .toast-icon { color: var(--blue); }
+
+.toast-icon { flex-shrink: 0; margin-top: 1px; }
+
+@media (max-width: 600px) {
+  .toast-stack {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
 }
 
 /* ── Motion settings for system accessibility ──────────────────── */
