@@ -112,73 +112,48 @@ export default function Hero({
   ];
 
   // Mock initial reports from Figma prototype
-  const mockFeed = [
-    {
-      id: 'FMC-2024-8841',
-      title: 'Large pothole on Elm Street near bus stop',
-      category: 'Potholes & Roads',
-      location: '12 Elm St, Downtown',
-      status: 'In Progress',
-      statusClass: 'status-inprogress',
-      time: '2 hours ago',
-      votes: 14
-    },
-    {
-      id: 'FMC-2024-8837',
-      title: 'Streetlight out for 3 weeks at Oak Ave & 5th',
-      category: 'Street Lighting',
-      location: 'Oak Ave & 5th, Northside',
-      status: 'Assigned',
-      statusClass: 'status-assigned',
-      time: '5 hours ago',
-      votes: 27
-    },
-    {
-      id: 'FMC-2024-8830',
-      title: 'Overflowing storm drain flooding sidewalk',
-      category: 'Flooding & Drains',
-      location: 'River Rd, Westbank',
-      status: 'Resolved',
-      statusClass: 'status-resolved',
-      time: '1 day ago',
-      votes: 9
-    },
-    {
-      id: 'FMC-2024-8819',
-      title: 'Graffiti on underpass wall, Main St Bridge',
-      category: 'Waste & Litter',
-      location: 'Main St Bridge, Central',
-      status: 'Under Review',
-      statusClass: 'status-review',
-      time: '2 days ago',
-      votes: 6
-    }
-  ];
-
-  // Map real complaints to feed items and Prepend to mock list
+  // Map real complaints from the database to feed items
   const realMappedComplaints = complaints.map(c => {
     let statusClass = 'status-review';
-    if (c.status === 'In Progress') statusClass = 'status-inprogress';
-    else if (c.status === 'Resolved') statusClass = 'status-resolved';
-    else if (c.status === 'Assigned') statusClass = 'status-assigned';
+    let displayStatus = c.status || 'Pending';
+    
+    if (c.status === 'In Review' || c.status === 'Submitted') {
+      statusClass = 'status-inprogress';
+      displayStatus = c.status === 'Submitted' ? 'In Progress' : 'In Review';
+    } else if (c.status === 'Resolved') {
+      statusClass = 'status-resolved';
+      displayStatus = 'Resolved';
+    } else if (c.status === 'Forwarded' || c.status === 'Assigned') {
+      statusClass = 'status-assigned';
+      displayStatus = 'Forwarded';
+    }
 
     return {
       id: c.id.substring(0, 13).toUpperCase(),
       title: c.title,
       category: c.type || 'General',
       location: c.location,
-      status: c.status || 'Pending',
+      status: displayStatus,
       statusClass: statusClass,
       time: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Just now',
       votes: c.upvotes || 0
     };
   });
 
-  const combinedFeed = [...realMappedComplaints, ...mockFeed];
-
   const filteredFeed = feedFilter === 'All' 
-    ? combinedFeed 
-    : combinedFeed.filter(item => item.status.toLowerCase() === feedFilter.toLowerCase() || (feedFilter === 'Under Review' && item.status === 'Pending'));
+    ? realMappedComplaints 
+    : realMappedComplaints.filter(item => {
+        const filterLower = feedFilter.toLowerCase();
+        const statusLower = item.status.toLowerCase();
+        
+        if (filterLower === 'in progress') {
+          return statusLower === 'in progress' || statusLower === 'in review' || statusLower === 'submitted' || statusLower === 'pending';
+        }
+        if (filterLower === 'assigned') {
+          return statusLower === 'assigned' || statusLower === 'forwarded';
+        }
+        return statusLower === filterLower;
+      });
 
   // Testimonials list
   const testimonials = [
