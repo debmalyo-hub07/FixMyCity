@@ -26,7 +26,7 @@ export const authorityOptions = [
 
 const EMPTY_COMPLAINT_FORM = {
   title: '',
-  type: complaintTypes[0],
+  type: 'Drainage problem',
   location: '',
   description: '',
   images: [],
