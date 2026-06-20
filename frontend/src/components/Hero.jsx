@@ -5,13 +5,12 @@ import {
   Bell,
   Camera,
   ChevronRight,
-  Construction,
   Droplets,
   Lightbulb,
   MapPin,
   Menu,
+  MoreHorizontal,
   Star,
-  Trash2,
   TrendingUp,
   TriangleAlert,
   X,
@@ -84,31 +83,31 @@ export default function Hero({
     }
   ];
 
-  // Categories definition (main four only, counts computed dynamically from complaints database)
+  // Categories definition (four options from the citizen complaint form)
   const categories = [
     { 
-      icon: Construction, 
-      label: 'Potholes & Roads', 
+      icon: Lightbulb, 
+      label: 'Broken street light problem', 
+      count: 8341 + (complaints || []).filter(c => c.type === 'Broken street light problem').length, 
+      color: 'bg-yellow-soft' 
+    },
+    { 
+      icon: MapPin, 
+      label: 'Potholes', 
       count: 12480 + (complaints || []).filter(c => c.type === 'Potholes').length, 
       color: 'bg-orange-soft' 
     },
     { 
-      icon: Lightbulb, 
-      label: 'Street Lighting', 
-      count: 8341 + (complaints || []).filter(c => c.type === 'Broken street light problem' || (c.type === 'Others' && (c.title.toLowerCase().includes('light') || c.description.toLowerCase().includes('light')))).length, 
-      color: 'bg-yellow-soft' 
-    },
-    { 
-      icon: Trash2, 
-      label: 'Waste & Litter', 
-      count: 7920 + (complaints || []).filter(c => c.type === 'Others' && (c.title.toLowerCase().includes('waste') || c.title.toLowerCase().includes('litter') || c.description.toLowerCase().includes('waste') || c.description.toLowerCase().includes('litter'))).length, 
-      color: 'bg-green-soft' 
-    },
-    { 
       icon: Droplets, 
-      label: 'Flooding & Drains', 
+      label: 'Drainage problem', 
       count: 5640 + (complaints || []).filter(c => c.type === 'Drainage problem').length, 
       color: 'bg-blue-soft-new' 
+    },
+    { 
+      icon: MoreHorizontal, 
+      label: 'Others', 
+      count: 7920 + (complaints || []).filter(c => c.type === 'Others').length, 
+      color: 'bg-purple-soft-new' 
     }
   ];
 
