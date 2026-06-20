@@ -1,6 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Clock, ClipboardList, Search, SlidersHorizontal, MapPin, Tag, Briefcase, Maximize2, AlertTriangle } from 'lucide-react';
+import { 
+  Users, 
+  Clock, 
+  Search, 
+  SlidersHorizontal, 
+  MapPin, 
+  Tag, 
+  AlertTriangle, 
+  LayoutGrid, 
+  FileText, 
+  Send, 
+  CheckCircle2, 
+  LogOut, 
+  Calendar 
+} from 'lucide-react';
 import ComplaintDetail from './ComplaintDetail';
 
 export default function AdminDashboard({
@@ -21,6 +35,7 @@ export default function AdminDashboard({
   const [mobileView, setMobileView] = useState('list'); // 'list' or 'detail'
   const [maximizedImage, setMaximizedImage] = useState(null);
 
+  const [activeTab, setActiveTab] = useState('citizens'); // default active tab matches screenshot 'citizens'
   const [forwardingComplaintId, setForwardingComplaintId] = useState(null);
   const [selectedAuthority, setSelectedAuthority] = useState(authorityOptions[0]);
 
@@ -46,7 +61,7 @@ export default function AdminDashboard({
   }, [complaints]);
 
   // Statuses
-  const statusOptions = ['All', 'Submitted', 'In Review', 'Forwarded', 'Resolved'];
+  const statusOptions = ['All', 'Pending', 'In Review', 'Forwarded', 'Resolved'];
 
   const filteredComplaints = useMemo(() => {
     return complaints.filter((complaint) => {
@@ -64,102 +79,129 @@ export default function AdminDashboard({
     });
   }, [complaints, searchQuery, selectedStatus, selectedType]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
-  };
-
-  const getStatusClass = (status) => {
-    return `status-badge status-${status.toLowerCase().replace(/\s+/g, '-')}`;
-  };
 
   return (
-    <motion.div
-      className="dashboard-container-modern"
-      initial="hidden"
-      animate="show"
-      variants={containerVariants}
-    >
-      {/* Admin Header */}
-      <motion.div className="dashboard-header-card admin-header-theme" variants={cardVariants}>
-        <div className="header-greeting-info">
-          <span className="dashboard-eyebrow">Admin Control Center</span>
-          <h2>All Registered Complaints</h2>
-          <p>Review filed complaints, assign departments, and update resolution progress.</p>
+    <div className="admin-dashboard-layout">
+      {/* Left Sidebar */}
+      <aside className="admin-sidebar">
+        <div className="admin-sidebar-brand">
+          <div className="admin-logo-box">
+            <MapPin size={16} color="#ffffff" strokeWidth={3} />
+          </div>
+          <div className="admin-brand-text">
+            <strong>FIXMYCITY</strong>
+            <span>ADMIN CONTROL PANEL</span>
+          </div>
         </div>
-        <motion.button
+
+        <nav className="admin-sidebar-menu">
+          <button
+            type="button"
+            className={`admin-sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            <LayoutGrid size={18} />
+            Dashboard
+          </button>
+          <button
+            type="button"
+            className={`admin-sidebar-item ${activeTab === 'complaints' ? 'active' : ''}`}
+            onClick={() => setActiveTab('complaints')}
+          >
+            <FileText size={18} />
+            Complaints
+          </button>
+          <button
+            type="button"
+            className={`admin-sidebar-item ${activeTab === 'citizens' ? 'active' : ''}`}
+            onClick={() => setActiveTab('citizens')}
+          >
+            <Users size={18} />
+            Citizens
+          </button>
+        </nav>
+
+        <button
           type="button"
-          className="logout-action-btn"
+          className="admin-sidebar-logout"
           onClick={logout}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
         >
+          <LogOut size={18} />
           Sign Out
-        </motion.button>
-      </motion.div>
+        </button>
+      </aside>
 
-      {/* Admin Stats Row */}
-      <motion.div className="stats-row-modern" variants={containerVariants}>
-        <motion.div className="stat-card-modern border-blue" variants={cardVariants} whileHover={{ y: -3 }}>
-          <div className="stat-icon-wrapper bg-blue-soft text-blue">
-            <ClipboardList size={22} />
+      {/* Main Content Area */}
+      <main className="admin-main-content">
+        {/* Stats Grid Card */}
+        <div className="admin-stats-card-row">
+          <div className="admin-stat-card-col">
+            <div className="admin-stat-card-icon bg-blue-soft">
+              <FileText size={18} color="#1A2438" />
+            </div>
+            <div className="admin-stat-card-text">
+              <h3>{stats.total}</h3>
+              <span>Total Complaints</span>
+            </div>
           </div>
-          <div className="stat-text-wrapper">
-            <h3>{stats.total}</h3>
-            <span>Total complaints</span>
+          
+          <div className="admin-stat-card-col">
+            <div className="admin-stat-card-icon bg-warning-soft">
+              <Clock size={18} color="#E85D26" />
+            </div>
+            <div className="admin-stat-card-text">
+              <h3>{stats.active}</h3>
+              <span>Pending Review</span>
+            </div>
           </div>
-        </motion.div>
 
-        <motion.div className="stat-card-modern border-warning" variants={cardVariants} whileHover={{ y: -3 }}>
-          <div className="stat-icon-wrapper bg-warning-soft text-warning">
-            <Clock size={22} />
+          <div className="admin-stat-card-col">
+            <div className="admin-stat-card-icon bg-orange-soft">
+              <Send size={18} color="#ea580c" />
+            </div>
+            <div className="admin-stat-card-text">
+              <h3>{complaints.filter(c => c.status === 'Forwarded').length}</h3>
+              <span>Forwarded</span>
+            </div>
           </div>
-          <div className="stat-text-wrapper">
-            <h3>{stats.active}</h3>
-            <span>Needs Attention</span>
-          </div>
-        </motion.div>
 
-        <motion.div className="stat-card-modern border-success" variants={cardVariants} whileHover={{ y: -3 }}>
-          <div className="stat-icon-wrapper bg-success-soft text-success">
-            <Users size={22} />
+          <div className="admin-stat-card-col">
+            <div className="admin-stat-card-icon bg-success-soft">
+              <CheckCircle2 size={18} color="#16a34a" />
+            </div>
+            <div className="admin-stat-card-text">
+              <h3>{complaints.filter(c => c.status === 'Resolved').length}</h3>
+              <span>Resolved</span>
+            </div>
           </div>
-          <div className="stat-text-wrapper">
-            <h3>{stats.citizens}</h3>
-            <span>Citizens Served</span>
-          </div>
-        </motion.div>
-      </motion.div>
+        </div>
 
-      {/* Main Admin Section */}
-      <div className="admin-layout-grid">
-        {/* Left Side: Complaints List and management */}
-        <div className={`admin-left-panel ${mobileView === 'list' ? '' : 'mobile-hidden'}`}>
-          {/* Filters card */}
-          <motion.div className="card-panel-modern admin-filters-card" variants={cardVariants} style={{ marginBottom: '1.25rem' }}>
-            <div className="search-input-wrapper">
-              <Search size={16} className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by reporter, area, issue, UID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input-field"
-              />
+        {/* Complaints Layout Grid */}
+        <div className="admin-layout-grid-new">
+          {/* Left panel: List */}
+          <div className={`admin-left-panel-new ${mobileView === 'list' ? '' : 'mobile-hidden'}`}>
+            <div className="admin-list-header-new">
+              <h3>All Complaints</h3>
+            </div>
+
+            {/* Filters */}
+            <div className="admin-filters-card-new">
+              <div className="search-input-wrapper-new">
+                <Search size={18} className="search-icon-new" />
+                <input
+                  type="text"
+                  placeholder="Search by ID, title, area..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input-field-new"
+                />
+              </div>
               <button
                 type="button"
-                className={`filter-toggle-btn ${showFilters ? 'is-active' : ''}`}
+                className={`filter-toggle-btn-new ${showFilters ? 'is-active' : ''}`}
                 onClick={() => setShowFilters(!showFilters)}
               >
-                <SlidersHorizontal size={16} />
+                <SlidersHorizontal size={18} />
               </button>
             </div>
 
@@ -169,17 +211,16 @@ export default function AdminDashboard({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="expanded-filters-panel"
-                  style={{ marginTop: '1rem', borderTop: '1px solid var(--line)', paddingTop: '1rem' }}
+                  className="expanded-filters-panel-new"
                 >
-                  <div className="filter-group">
+                  <div className="filter-group-new">
                     <label>Filter Status</label>
-                    <div className="filter-chips">
+                    <div className="filter-chips-new">
                       {statusOptions.map((st) => (
                         <button
                           key={st}
                           type="button"
-                          className={`filter-chip ${selectedStatus === st ? 'is-active' : ''}`}
+                          className={`filter-chip-new ${selectedStatus === st ? 'is-active' : ''}`}
                           onClick={() => setSelectedStatus(st)}
                         >
                           {st}
@@ -188,14 +229,14 @@ export default function AdminDashboard({
                     </div>
                   </div>
 
-                  <div className="filter-group" style={{ marginTop: '0.75rem' }}>
+                  <div className="filter-group-new">
                     <label>Filter Category</label>
-                    <div className="filter-chips">
+                    <div className="filter-chips-new">
                       {categories.map((cat) => (
                         <button
                           key={cat}
                           type="button"
-                          className={`filter-chip ${selectedType === cat ? 'is-active' : ''}`}
+                          className={`filter-chip-new ${selectedType === cat ? 'is-active' : ''}`}
                           onClick={() => setSelectedType(cat)}
                         >
                           {cat}
@@ -206,267 +247,273 @@ export default function AdminDashboard({
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
 
-          {/* List of complaints */}
-          <div className="admin-complaints-scroll">
-            <AnimatePresence mode="popLayout">
-              {filteredComplaints.length ? (
-                filteredComplaints.map((complaint) => (
-                  <motion.article
-                    key={complaint.id}
-                    layoutId={`admin-card-${complaint.id}`}
-                    className={`admin-complaint-card-modern ${selectedComplaintId === complaint.id ? 'is-active' : ''}`}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 100 }}
-                  >
-                    <div className="admin-card-img-container">
-                      <img
-                        src={complaint.images?.[0] || complaint.image}
-                        alt={complaint.title}
-                        className="admin-card-img"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setMaximizedImage(complaint.images?.[0] || complaint.image);
+            {/* Quick Action Toolbar for Selected Complaint */}
+            {selectedComplaint && (
+              <div className="admin-quick-actions-bar">
+                <span>Quick:</span>
+                <button
+                  type="button"
+                  className="admin-btn-quick approve"
+                  disabled={selectedComplaint.status !== 'Submitted'}
+                  onClick={() => handleStatusChange(selectedComplaint.id, 'In Review', '')}
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  className="admin-btn-quick forward"
+                  disabled={selectedComplaint.status === 'Resolved'}
+                  onClick={() => {
+                    setSelectedAuthority(authorityOptions[0]);
+                    setForwardingComplaintId(selectedComplaint.id);
+                  }}
+                >
+                  Forward
+                </button>
+                <button
+                  type="button"
+                  className="admin-btn-quick solve"
+                  disabled={selectedComplaint.status === 'Resolved'}
+                  onClick={() => handleStatusChange(selectedComplaint.id, 'Resolved', '')}
+                >
+                  Solve
+                </button>
+              </div>
+            )}
+
+            {/* Scrollable list */}
+            <div className="admin-complaints-scroll-new">
+              <AnimatePresence mode="popLayout">
+                {filteredComplaints.length ? (
+                  filteredComplaints.map((complaint) => {
+                    const isSelected = selectedComplaintId === complaint.id;
+                    return (
+                      <motion.article
+                        key={complaint.id}
+                        layoutId={`admin-card-${complaint.id}`}
+                        className={`admin-complaint-card-new ${isSelected ? 'is-selected' : ''}`}
+                        onClick={() => {
+                          setSelectedComplaintId(complaint.id);
                         }}
-                        title="Click to view maximized"
-                      />
-                      <div className="admin-card-img-overlay">
-                        <Maximize2 size={12} color="#ffffff" />
-                      </div>
-                    </div>
-                    <div className="admin-card-content">
-                      <div className="admin-card-topbar">
-                        <div>
-                          <span className="admin-card-id">{complaint.id}</span>
-                          <h3>{complaint.title}</h3>
-                          <p className="admin-card-reporter">
-                            Reporter: <strong>{complaint.citizenName}</strong> ({complaint.citizenPhone})
-                          </p>
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ type: 'spring', stiffness: 100 }}
+                      >
+                        <div className="admin-card-header-new">
+                          <span className="admin-card-id-new">{complaint.id}</span>
+                          <span className={`status-badge-new status-${complaint.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                            {complaint.status}
+                          </span>
                         </div>
-                        <span className={getStatusClass(complaint.status)}>
-                          {complaint.status}
-                        </span>
-                      </div>
 
-                      <div className="admin-card-meta">
-                        <span className="meta-tag-chip">
-                          <Tag size={12} style={{ marginRight: '4px' }} />
-                          {complaint.type}
-                        </span>
-                        <span className="meta-tag-chip">
-                          <MapPin size={12} style={{ marginRight: '4px' }} />
-                          {complaint.location}
-                        </span>
-                        <span className="meta-tag-chip">
-                          <Briefcase size={12} style={{ marginRight: '4px' }} />
-                          {complaint.forwardedTo ? `Assigned: ${complaint.forwardedTo}` : 'Unassigned'}
-                        </span>
-                      </div>
+                        <h4 className="admin-card-title-new">{complaint.title}</h4>
 
-                      <p className="admin-card-desc">{complaint.description}</p>
-
-                      {complaint.imageCheck?.matched === false && (
-                        <div
-                          className="image-flag-chip"
-                          title={complaint.imageCheck?.note || 'Image may not match the selected category'}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            marginBottom: '0.5rem',
-                            padding: '3px 8px',
-                            borderRadius: '999px',
-                            fontSize: '0.72rem',
-                            fontWeight: 600,
-                            color: '#92400e',
-                            background: '#fef3c7',
-                            border: '1px solid #fcd34d',
-                          }}
-                        >
-                          <AlertTriangle size={12} />
-                          Image flagged
+                        <div className="admin-card-meta-new">
+                          <span className="meta-text-new">
+                            <MapPin size={13} style={{ marginRight: '4px' }} />
+                            {complaint.location}
+                          </span>
+                          <span className="meta-text-new">
+                            <Tag size={13} style={{ marginRight: '4px' }} />
+                            {complaint.type}
+                          </span>
+                          {complaint.forwardedTo && (
+                            <span className="meta-text-new department">
+                              <Send size={12} style={{ marginRight: '4px' }} />
+                              {complaint.forwardedTo}
+                            </span>
+                          )}
                         </div>
-                      )}
 
-                      <div className="admin-card-actions">
-                        <motion.button
-                          whileTap={{ scale: 0.96 }}
-                          type="button"
-                          className="admin-btn-secondary"
-                          onClick={() => {
-                            setSelectedComplaintId(complaint.id);
-                            setMobileView('detail');
-                          }}
-                        >
-                          View History
-                        </motion.button>
-
-                        {/* Inline Status Actions in the Middle */}
-                        {forwardingComplaintId === complaint.id ? (
-                          <div className="inline-forward-panel">
-                            <select
-                              value={selectedAuthority}
-                              onChange={(e) => setSelectedAuthority(e.target.value)}
-                              className="inline-authority-select"
-                            >
-                              {authorityOptions.map((auth) => (
-                                <option key={auth} value={auth}>
-                                  {auth}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              type="button"
-                              className="admin-btn-action admin-btn-primary-small"
-                              onClick={() => {
-                                handleStatusChange(complaint.id, 'Forwarded', selectedAuthority);
-                                setForwardingComplaintId(null);
-                              }}
-                            >
-                              Assign
-                            </button>
-                            <button
-                              type="button"
-                              className="admin-btn-action admin-btn-cancel-small"
-                              onClick={() => setForwardingComplaintId(null)}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="inline-status-buttons">
-                            {complaint.status === 'Submitted' && (
-                              <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                type="button"
-                                className="admin-btn-action admin-btn-approve"
-                                onClick={() => handleStatusChange(complaint.id, 'In Review', '')}
-                              >
-                                Approve
-                              </motion.button>
-                            )}
-
-                            {(complaint.status === 'Submitted' || complaint.status === 'In Review') && (
-                              <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                type="button"
-                                className="admin-btn-action admin-btn-forward"
-                                onClick={() => {
-                                  setSelectedAuthority(authorityOptions[0]);
-                                  setForwardingComplaintId(complaint.id);
-                                }}
-                              >
-                                Forward
-                              </motion.button>
-                            )}
-
-                            {complaint.status === 'Forwarded' && (
-                              <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                type="button"
-                                className="admin-btn-action admin-btn-forward-change"
-                                onClick={() => {
-                                  setSelectedAuthority(complaint.forwardedTo || authorityOptions[0]);
-                                  setForwardingComplaintId(complaint.id);
-                                }}
-                              >
-                                Re-assign
-                              </motion.button>
-                            )}
-
-                            {complaint.status !== 'Resolved' && (
-                              <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                type="button"
-                                className="admin-btn-action admin-btn-solve"
-                                onClick={() => handleStatusChange(complaint.id, 'Resolved', '')}
-                              >
-                                Solve
-                              </motion.button>
-                            )}
-
-                            {complaint.status === 'Resolved' && (
-                              <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                type="button"
-                                className="admin-btn-action admin-btn-reopen"
-                                onClick={() => handleStatusChange(complaint.id, 'Submitted', '')}
-                              >
-                                Reopen
-                              </motion.button>
-                            )}
-                          </div>
-                        )}
-
-                        <motion.button
-                          whileTap={{ scale: 0.96 }}
-                          type="button"
-                          className="admin-btn-delete"
-                          onClick={() => handleComplaintDelete(complaint.id)}
-                        >
-                          Delete
-                        </motion.button>
-                      </div>
-                    </div>
-                  </motion.article>
-                ))
-              ) : (
-                <div className="empty-state-modern">
-                  <h4>No complaints found</h4>
-                  <p>Admins can view reported issues once they match the filter parameters.</p>
-                </div>
-              )}
-            </AnimatePresence>
+                        <div className="admin-card-footer-new">
+                          <span className="footer-timestamp-new">
+                            <Calendar size={13} style={{ marginRight: '4px' }} />
+                            Updated {complaint.updatedAt}
+                          </span>
+                        </div>
+                      </motion.article>
+                    );
+                  })
+                ) : (
+                  <div className="empty-state-modern-new">
+                    <h4>No complaints found</h4>
+                    <p>Admins can view reported issues once they match the filter parameters.</p>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
 
-        {/* Right Side: Timeline details */}
-        <motion.div 
-          className={`admin-right-panel card-panel-modern ${mobileView === 'detail' ? '' : 'mobile-hidden'}`} 
-          variants={cardVariants}
-        >
-          {selectedComplaint?.imageCheck?.matched === false && (
-            <motion.div
-              className="image-flag-banner"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 120 }}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.65rem',
-                marginBottom: '1rem',
-                padding: '0.85rem 1rem',
-                borderRadius: '12px',
-                color: '#92400e',
-                background: '#fffbeb',
-                border: '1px solid #fcd34d',
-              }}
-            >
-              <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div style={{ fontSize: '0.85rem', lineHeight: 1.45 }}>
-                <strong>
-                  Image may not match category
-                  {selectedComplaint.imageCheck?.note ? ` — ${selectedComplaint.imageCheck.note}` : ''}
-                </strong>
-                <div style={{ marginTop: '2px', fontWeight: 500 }}>
-                  Please verify the photo before resolving.
+          {/* Right panel: Details and actions */}
+          <div className={`admin-right-panel-new ${mobileView === 'detail' ? '' : 'mobile-hidden'}`}>
+            {selectedComplaint ? (
+              <div className="admin-detail-pane-wrapper">
+                {/* Top Action Row */}
+                <div className="admin-detail-actions-top">
+                  <div className="action-buttons-group">
+                    <button
+                      type="button"
+                      className="admin-action-btn-top approve"
+                      disabled={selectedComplaint.status !== 'Submitted'}
+                      onClick={() => handleStatusChange(selectedComplaint.id, 'In Review', '')}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-action-btn-top forward"
+                      disabled={selectedComplaint.status === 'Resolved'}
+                      onClick={() => {
+                        setSelectedAuthority(authorityOptions[0]);
+                        setForwardingComplaintId(selectedComplaint.id);
+                      }}
+                    >
+                      Forward
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-action-btn-top solve"
+                      disabled={selectedComplaint.status === 'Resolved'}
+                      onClick={() => handleStatusChange(selectedComplaint.id, 'Resolved', '')}
+                    >
+                      Solve
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="admin-action-btn-top delete"
+                    onClick={() => handleComplaintDelete(selectedComplaint.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+
+                {/* Inline Forward/Assign dropdown pane */}
+                {forwardingComplaintId === selectedComplaint.id && (
+                  <div className="detail-forward-dropdown-panel">
+                    <div className="dropdown-label">Assign Department Authority:</div>
+                    <div className="dropdown-controls">
+                      <select
+                        value={selectedAuthority}
+                        onChange={(e) => setSelectedAuthority(e.target.value)}
+                        className="admin-authority-select-dropdown"
+                      >
+                        {authorityOptions.map((auth) => (
+                          <option key={auth} value={auth}>
+                            {auth}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="dropdown-action-btn confirm"
+                        onClick={() => {
+                          handleStatusChange(selectedComplaint.id, 'Forwarded', selectedAuthority);
+                          setForwardingComplaintId(null);
+                        }}
+                      >
+                        Assign
+                      </button>
+                      <button
+                        type="button"
+                        className="dropdown-action-btn cancel"
+                        onClick={() => setForwardingComplaintId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Standard ComplaintDetail visual render */}
+                <div className="admin-detail-content-card">
+                  {selectedComplaint.imageCheck?.matched === false && (
+                    <div className="image-flag-banner-admin">
+                      <AlertTriangle size={16} />
+                      <div>
+                        <strong>Image may not match category</strong>
+                        <span>Please verify the photo before resolving.</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <ComplaintDetail
+                    selectedComplaint={selectedComplaint}
+                    showFullDetails={true}
+                    onBackToList={() => setMobileView('list')}
+                    onImageClick={setMaximizedImage}
+                  />
+
+                  {/* Reporter details block */}
+                  <div className="admin-detail-reporter-box">
+                    <div className="reporter-detail-col">
+                      <span className="detail-label">Reporter</span>
+                      <strong className="detail-value">{selectedComplaint.citizenName}</strong>
+                    </div>
+                    <div className="reporter-detail-col">
+                      <span className="detail-label">Phone</span>
+                      <strong className="detail-value">{selectedComplaint.citizenPhone}</strong>
+                    </div>
+                  </div>
+
+                  {/* Middle Actions row */}
+                  <div className="admin-detail-actions-middle">
+                    <div className="left-group">
+                      <button
+                        type="button"
+                        className="admin-middle-action-btn reassign"
+                        onClick={() => {
+                          setSelectedAuthority(selectedComplaint.forwardedTo || authorityOptions[0]);
+                          setForwardingComplaintId(selectedComplaint.id);
+                        }}
+                      >
+                        Re-assign
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-middle-action-btn solve"
+                        disabled={selectedComplaint.status === 'Resolved'}
+                        onClick={() => handleStatusChange(selectedComplaint.id, 'Resolved', '')}
+                      >
+                        Solve
+                      </button>
+                    </div>
+
+                    <div className="right-group">
+                      <button
+                        type="button"
+                        className="admin-middle-link-btn"
+                        onClick={() => {
+                          // View history or scroll to timeline
+                          const timelineEl = document.querySelector('.detail-timeline-box-new');
+                          if (timelineEl) timelineEl.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      >
+                        View History
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-middle-action-btn delete"
+                        onClick={() => handleComplaintDelete(selectedComplaint.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          )}
-
-          <ComplaintDetail
-            selectedComplaint={selectedComplaint}
-            showFullDetails={true}
-            onBackToList={() => setMobileView('list')}
-            onImageClick={setMaximizedImage}
-          />
-        </motion.div>
-      </div>
+            ) : (
+              <div className="empty-state-modern-new">
+                <h4>No complaint selected</h4>
+                <p>Select a complaint from the list to view its current timeline and manage updates.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
 
       {/* Lightbox maximized photo viewer */}
       <AnimatePresence>
@@ -499,6 +546,6 @@ export default function AdminDashboard({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

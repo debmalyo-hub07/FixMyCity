@@ -384,7 +384,7 @@ function App() {
     <div className="app-shell">
       {session && <Header portal={portal} setPortal={setPortal} session={session} logout={logout} />}
 
-      <main className="page-content">
+      <main className={`page-content ${session?.role === 'admin' ? 'admin-page-content' : ''}`}>
         {session?.role === 'citizen' ? (
           <CitizenDashboard
             session={session}
