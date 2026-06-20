@@ -3628,7 +3628,7 @@ textarea:focus-visible {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--white-fade-70);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Process Timeline (Three Steps) */
@@ -4124,7 +4124,7 @@ textarea:focus-visible {
 .landing-quote {
   font-size: 1rem;
   line-height: 1.6;
-  color: rgba(244, 239, 228, 0.85);
+  color: rgba(26, 36, 56, 0.85) !important;
   margin-bottom: 24px;
   font-style: italic;
 }
