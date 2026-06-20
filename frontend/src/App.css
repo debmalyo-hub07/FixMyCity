@@ -3703,7 +3703,7 @@ textarea:focus-visible {
   font-size: 5.5rem;
   line-height: 1;
   margin-bottom: 24px;
-  color: var(--white-fade-15);
+  color: rgba(26, 36, 56, 0.2);
   user-select: none;
 }
 
@@ -3718,8 +3718,8 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--white-fade-15);
+  background-color: rgba(26, 36, 56, 0.03);
+  border: 1px solid rgba(26, 36, 56, 0.2);
 }
 
 .landing-timeline-card.inverted .landing-card-icon-box {
@@ -3739,7 +3739,7 @@ textarea:focus-visible {
 }
 
 .landing-timeline-card.inverted .landing-card-title {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .landing-card-desc {
@@ -3749,7 +3749,7 @@ textarea:focus-visible {
 }
 
 .landing-timeline-card.inverted .landing-card-desc {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Category Grid Section */

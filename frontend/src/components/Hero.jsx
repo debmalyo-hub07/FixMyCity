@@ -399,7 +399,7 @@ export default function Hero({
                 <div className={`landing-timeline-card ${idx === 1 ? 'inverted' : ''}`} key={idx}>
                   <div className="landing-card-num">{step.number}</div>
                   <div className="landing-card-icon-box">
-                    <IconComponent size={24} style={{ color: idx === 1 ? '#1A2438' : '#F4EFE4' }} />
+                    <IconComponent size={24} style={{ color: '#1A2438' }} />
                   </div>
                   <h3 className="landing-card-title">{step.title}</h3>
                   <p className="landing-card-desc">{step.desc}</p>
