@@ -89,13 +89,13 @@ export default function Hero({
     { 
       icon: Construction, 
       label: 'Potholes & Roads', 
-      count: 12480 + (complaints || []).filter(c => c.type === 'Potholes' || c.type === 'Road problem').length, 
+      count: 12480 + (complaints || []).filter(c => c.type === 'Potholes').length, 
       color: 'bg-orange-soft' 
     },
     { 
       icon: Lightbulb, 
       label: 'Street Lighting', 
-      count: 8341 + (complaints || []).filter(c => c.type === 'Others' && (c.title.toLowerCase().includes('light') || c.description.toLowerCase().includes('light'))).length, 
+      count: 8341 + (complaints || []).filter(c => c.type === 'Broken street light problem' || (c.type === 'Others' && (c.title.toLowerCase().includes('light') || c.description.toLowerCase().includes('light')))).length, 
       color: 'bg-yellow-soft' 
     },
     { 

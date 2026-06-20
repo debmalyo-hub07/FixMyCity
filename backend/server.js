@@ -69,18 +69,16 @@ function verifyImageCategory(predictions, category) {
     );
   }
 
-  if (category === 'Road problem') {
+  if (category === 'Broken street light problem') {
     return labels.some(l => 
-      l.includes('road') || 
-      l.includes('street') || 
-      l.includes('highway') || 
-      l.includes('asphalt') || 
-      l.includes('cobblestone') || 
-      l.includes('curb') || 
-      l.includes('barrier') || 
-      l.includes('pothole') ||
-      l.includes('crater') ||
-      l.includes('manhole')
+      l.includes('light') || 
+      l.includes('lamp') || 
+      l.includes('pole') || 
+      l.includes('electricity') || 
+      l.includes('wire') || 
+      l.includes('bulb') ||
+      l.includes('streetlamp') ||
+      l.includes('lantern')
     );
   }
 
@@ -402,7 +400,7 @@ app.post('/api/complaints', async (req, res) => {
       at: getFormattedDate(),
     };
 
-    if (['Potholes', 'Road problem', 'Drainage problem'].includes(type)) {
+    if (['Potholes', 'Broken street light problem', 'Drainage problem'].includes(type)) {
       const activeImage = image || (images && images[0]);
       if (!activeImage) {
         return res.status(400).json({ message: `A photo proof is required for category '${type}'.` });

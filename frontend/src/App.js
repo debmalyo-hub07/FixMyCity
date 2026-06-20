@@ -11,7 +11,7 @@ const SESSION_KEY = 'fixmycity-session';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const complaintTypes = [
-  'Road problem',
+  'Broken street light problem',
   'Potholes',
   'Drainage problem',
   'Others',
@@ -26,7 +26,7 @@ export const authorityOptions = [
 
 const EMPTY_COMPLAINT_FORM = {
   title: '',
-  type: 'Drainage problem',
+  type: complaintTypes[0],
   location: '',
   description: '',
   images: [],

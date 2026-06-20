@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trash2,
   ImagePlus,
-  Hash,
+  Lightbulb,
   MapPin,
   Droplets,
   MoreHorizontal,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const TYPE_META = {
-  'Road problem': { icon: Hash, hint: 'Cracks, broken stretches, debris' },
+  'Broken street light problem': { icon: Lightbulb, hint: 'Flickering, non-functioning, dark street lights' },
   Potholes: { icon: MapPin, hint: 'Sunken patches, road craters' },
   'Drainage problem': { icon: Droplets, hint: 'Clogged overflow, drainage water' },
   Others: { icon: MoreHorizontal, hint: 'Plumbing, gas etc related' },
