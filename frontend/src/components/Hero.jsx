@@ -53,12 +53,32 @@ export default function Hero({
     setMenuOpen(false);
   };
 
-  // Mock static stats from Figma prototype, combined with actual system stats
+  // Calculate average resolution time dynamically from database resolved complaints
+  const avgResolutionTime = React.useMemo(() => {
+    const resolvedComplaints = (complaints || []).filter(c => c.status === 'Resolved' && c.createdAt && c.updatedAt);
+    if (resolvedComplaints.length === 0) return '0 days';
+    
+    let totalMs = 0;
+    let validCount = 0;
+    resolvedComplaints.forEach(c => {
+      const created = new Date(c.createdAt).getTime();
+      const updated = new Date(c.updatedAt).getTime();
+      if (!isNaN(created) && !isNaN(updated) && updated >= created) {
+        totalMs += (updated - created);
+        validCount++;
+      }
+    });
+    
+    if (validCount === 0) return '0 days';
+    const avgDays = totalMs / (1000 * 60 * 60 * 24 * validCount);
+    return `${avgDays.toFixed(1)} days`;
+  }, [complaints]);
+
   const statsList = [
-    { value: (48291 + (stats.total || 0)).toLocaleString(), label: 'Issues Reported' },
-    { value: (31847 + (stats.resolved || 0)).toLocaleString(), label: 'Issues Resolved' },
-    { value: '4.2 days', label: 'Avg. Resolution' },
-    { value: '127', label: 'Partner Cities' }
+    { value: (stats.total || 0).toLocaleString(), label: 'Issues Reported' },
+    { value: (stats.resolved || 0).toLocaleString(), label: 'Issues Resolved' },
+    { value: avgResolutionTime, label: 'Avg. Resolution' },
+    { value: '1', label: 'Partner Cities' }
   ];
 
   // Steps definition
