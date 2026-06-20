@@ -278,24 +278,34 @@ export default function Hero({
         <div className="landing-deco-frame-2"></div>
         <div className="landing-deco-dot-1"></div>
         <div className="landing-deco-dot-2"></div>
-
         <div className="landing-hero-container">
-          <div style={{ zIndex: 5 }}>
-            <div className="landing-eyebrow-badge">
+          <motion.div 
+            style={{ zIndex: 5 }}
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.08 }
+              }
+            }}
+          >
+            <motion.div className="landing-eyebrow-badge" variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }}>
               <Zap size={14} color="#F0E840" fill="#F0E840" />
               <span>Civic reporting, reimagined</span>
-            </div>
-            <h1 className="landing-hero-title">
+            </motion.div>
+            <motion.h1 className="landing-hero-title" variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
               Report.
               <br />
               <span>Track.</span>
               <br />
               Fix.
-            </h1>
-            <p className="landing-hero-desc">
+            </motion.h1>
+            <motion.p className="landing-hero-desc" variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
               Spotted a pothole, broken streetlight, or neighborhood eyesore? FixMyCity connects residents directly to the right city department — and keeps you updated every step of the way.
-            </p>
-            <div className="landing-hero-actions">
+            </motion.p>
+            <motion.div className="landing-hero-actions" variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
               <button 
                 type="button" 
                 className="landing-btn-hero-primary"
@@ -312,9 +322,9 @@ export default function Hero({
                 <MapPin size={16} />
                 View Live Map
               </a>
-            </div>
+            </motion.div>
 
-            <div className="landing-hero-social">
+            <motion.div className="landing-hero-social" variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }}>
               <div className="landing-avatar-group">
                 <div className="landing-avatar-dot" style={{ backgroundColor: '#3A7CA5' }} />
                 <div className="landing-avatar-dot" style={{ backgroundColor: '#E85D26' }} />
@@ -324,11 +334,16 @@ export default function Hero({
               <p>
                 <strong>12,400+</strong> citizens reported issues this month
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Hero Image overlays */}
-          <div className="landing-hero-image-pane">
+          <motion.div 
+            className="landing-hero-image-pane"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: 'spring', stiffness: 80, delay: 0.2 }}
+          >
             <div className="landing-hero-image-wrapper">
               <div className="landing-hero-image-border" />
               <div className="landing-hero-image-frame">
@@ -340,7 +355,13 @@ export default function Hero({
               </div>
 
               {/* Floating overlays */}
-              <div className="landing-floating-report">
+              <motion.div 
+                className="landing-floating-report"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.6, type: 'spring', stiffness: 100 }}
+                whileHover={{ y: -5 }}
+              >
                 <div className="landing-live-badge-row">
                   <div className="landing-live-dot" />
                   <span className="landing-live-label">Live Report</span>
@@ -351,14 +372,20 @@ export default function Hero({
                   <span className="landing-status-label">Status</span>
                   <span className="landing-status-badge-live">IN PROGRESS</span>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="landing-floating-resolution">
+              <motion.div 
+                className="landing-floating-resolution"
+                initial={{ opacity: 0, scale: 0.9, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.8, type: 'spring', stiffness: 100 }}
+                whileHover={{ y: -5 }}
+              >
                 <h2>66%</h2>
                 <p>Resolution rate</p>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -366,10 +393,17 @@ export default function Hero({
       <section className="landing-stats-section">
         <div className="landing-stats-container">
           {statsList.map((stat, idx) => (
-            <div className="landing-stat-box" key={idx}>
+            <motion.div 
+              className="landing-stat-box" 
+              key={idx}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.08 }}
+            >
               <div className="landing-stat-value">{stat.value}</div>
               <div className="landing-stat-label">{stat.label}</div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -390,14 +424,22 @@ export default function Hero({
             {steps.map((step, idx) => {
               const IconComponent = step.icon;
               return (
-                <div className={`landing-timeline-card ${idx === 1 ? 'inverted' : ''}`} key={idx}>
+                <motion.div 
+                  className={`landing-timeline-card ${idx === 1 ? 'inverted' : ''}`} 
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  transition={{ type: 'spring', stiffness: 100, delay: idx * 0.1 }}
+                >
                   <div className="landing-card-num">{step.number}</div>
                   <div className="landing-card-icon-box">
                     <IconComponent size={24} style={{ color: '#1A2438' }} />
                   </div>
                   <h3 className="landing-card-title">{step.title}</h3>
                   <p className="landing-card-desc">{step.desc}</p>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -426,17 +468,23 @@ export default function Hero({
             {categories.map((cat, idx) => {
               const IconComponent = cat.icon;
               return (
-                <div 
+                <motion.div 
                   className="landing-category-card" 
                   key={idx}
                   onClick={() => openAuthModal('citizen', 'register')}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 100, delay: idx * 0.08 }}
                 >
                   <div className={`landing-cat-icon-badge ${cat.color}`}>
                     <IconComponent size={24} />
                   </div>
                   <h3>{cat.label}</h3>
                   <span className="font-mono">{cat.count.toLocaleString()} reports</span>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -469,48 +517,68 @@ export default function Hero({
             </div>
           </div>
 
-          <div className="landing-feed-list">
-            {filteredFeed.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(255,255,255,0.4)', fontFamily: 'Barlow' }}>
-                No reports found in this status category.
-              </div>
-            ) : (
-              filteredFeed.map((item, idx) => (
-                <div className="landing-feed-item" key={idx} onClick={() => openAuthModal('citizen', 'login')} style={{ cursor: 'pointer' }}>
-                  <div className="landing-feed-main">
-                    <div className="landing-feed-icon-col">
-                      <TriangleAlert size={16} />
-                    </div>
-                    <div className="landing-feed-details">
-                      <div className="landing-feed-meta">
-                        <span className="landing-feed-id font-mono">{item.id}</span>
-                        <span className="landing-feed-cat-tag">{item.category}</span>
+          <div className="landing-feed-list" style={{ position: 'relative' }}>
+            <AnimatePresence mode="popLayout">
+              {filteredFeed.length === 0 ? (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(255,255,255,0.4)', fontFamily: 'Barlow' }}
+                >
+                  No reports found in this status category.
+                </motion.div>
+              ) : (
+                filteredFeed.map((item) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
+                    whileHover={{ scale: 1.01, x: 4, transition: { duration: 0.2 } }}
+                    className="landing-feed-item"
+                    key={item.id}
+                    onClick={() => openAuthModal('citizen', 'login')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="landing-feed-main">
+                      <div className="landing-feed-icon-col">
+                        <TriangleAlert size={16} />
                       </div>
-                      <h3>{item.title}</h3>
-                      <div className="landing-feed-location">
-                        <MapPin size={12} />
-                        <span>{item.location}</span>
+                      <div className="landing-feed-details">
+                        <div className="landing-feed-meta">
+                          <span className="landing-feed-id font-mono">{item.id}</span>
+                          <span className="landing-feed-cat-tag">{item.category}</span>
+                        </div>
+                        <h3>{item.title}</h3>
+                        <div className="landing-feed-location">
+                          <MapPin size={12} />
+                          <span>{item.location}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="landing-feed-aside">
-                    <div className="landing-feed-status-block">
-                      <span className={`landing-feed-status font-mono ${item.statusClass}`}>
-                        {item.status}
-                      </span>
-                      <span className="landing-feed-time">{item.time}</span>
-                    </div>
+                    <div className="landing-feed-aside">
+                      <div className="landing-feed-status-block">
+                        <span className={`landing-feed-status font-mono ${item.statusClass}`}>
+                          {item.status}
+                        </span>
+                        <span className="landing-feed-time">{item.time}</span>
+                      </div>
 
-                    <div className="landing-feed-votes">
-                      <TrendingUp size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                      <span className="font-mono">{item.votes}</span>
+                      <div className="landing-feed-votes">
+                        <TrendingUp size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                        <span className="font-mono">{item.votes}</span>
+                      </div>
+                      <ChevronRight size={16} className="arrow" />
                     </div>
-                    <ChevronRight size={16} className="arrow" />
-                  </div>
-                </div>
-              ))
-            )}
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="landing-feed-actions">
@@ -540,7 +608,15 @@ export default function Hero({
 
           <div className="landing-testimonials-grid">
             {testimonials.map((test, idx) => (
-              <div className={`landing-testimonial-card ${idx === 1 ? 'highlighted' : ''}`} key={idx}>
+              <motion.div 
+                className={`landing-testimonial-card ${idx === 1 ? 'highlighted' : ''}`} 
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
+                transition={{ type: 'spring', stiffness: 100, delay: idx * 0.1 }}
+              >
                 <div>
                   <div className="landing-stars">
                     {[...Array(5)].map((_, i) => (
@@ -558,7 +634,7 @@ export default function Hero({
                     <div className="landing-reviewer-role">{test.role}</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
