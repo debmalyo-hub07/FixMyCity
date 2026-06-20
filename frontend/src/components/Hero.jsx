@@ -83,30 +83,30 @@ export default function Hero({
     }
   ];
 
-  // Categories definition (four options from the citizen complaint form)
+  // Categories definition (four options from the citizen complaint form, exact database counts)
   const categories = [
     { 
       icon: Lightbulb, 
       label: 'Broken street light problem', 
-      count: 8341 + (complaints || []).filter(c => c.type === 'Broken street light problem').length, 
+      count: (complaints || []).filter(c => c.type === 'Broken street light problem').length, 
       color: 'bg-yellow-soft' 
     },
     { 
       icon: MapPin, 
       label: 'Potholes', 
-      count: 12480 + (complaints || []).filter(c => c.type === 'Potholes').length, 
+      count: (complaints || []).filter(c => c.type === 'Potholes').length, 
       color: 'bg-orange-soft' 
     },
     { 
       icon: Droplets, 
       label: 'Drainage problem', 
-      count: 5640 + (complaints || []).filter(c => c.type === 'Drainage problem').length, 
+      count: (complaints || []).filter(c => c.type === 'Drainage problem').length, 
       color: 'bg-blue-soft-new' 
     },
     { 
       icon: MoreHorizontal, 
       label: 'Others', 
-      count: 7920 + (complaints || []).filter(c => c.type === 'Others').length, 
+      count: (complaints || []).filter(c => c.type === 'Others').length, 
       color: 'bg-purple-soft-new' 
     }
   ];
