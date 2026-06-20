@@ -66,6 +66,15 @@ export default function Header({ portal, setPortal, session, logout }) {
                   <span className="admin-username">Admin</span>
                   <ChevronDown size={12} color="rgba(255,255,255,0.6)" />
                 </div>
+                <button 
+                  type="button" 
+                  className="header-logout-btn" 
+                  onClick={logout}
+                  title="Sign Out"
+                  style={{ marginLeft: '12px', display: 'flex', alignItems: 'center' }}
+                >
+                  <LogOut size={14} />
+                </button>
               </div>
             ) : (
               <>

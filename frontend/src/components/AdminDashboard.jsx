@@ -1,18 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, 
   Clock, 
   Search, 
   SlidersHorizontal, 
   MapPin, 
   Tag, 
   AlertTriangle, 
-  LayoutGrid, 
   FileText, 
   Send, 
   CheckCircle2, 
-  LogOut, 
   Calendar 
 } from 'lucide-react';
 import ComplaintDetail from './ComplaintDetail';
@@ -35,7 +32,6 @@ export default function AdminDashboard({
   const [mobileView, setMobileView] = useState('list'); // 'list' or 'detail'
   const [maximizedImage, setMaximizedImage] = useState(null);
 
-  const [activeTab, setActiveTab] = useState('citizens'); // default active tab matches screenshot 'citizens'
   const [forwardingComplaintId, setForwardingComplaintId] = useState(null);
   const [selectedAuthority, setSelectedAuthority] = useState(authorityOptions[0]);
 
@@ -82,55 +78,6 @@ export default function AdminDashboard({
 
   return (
     <div className="admin-dashboard-layout">
-      {/* Left Sidebar */}
-      <aside className="admin-sidebar">
-        <div className="admin-sidebar-brand">
-          <div className="admin-logo-box">
-            <MapPin size={16} color="#ffffff" strokeWidth={3} />
-          </div>
-          <div className="admin-brand-text">
-            <strong>FIXMYCITY</strong>
-            <span>ADMIN CONTROL PANEL</span>
-          </div>
-        </div>
-
-        <nav className="admin-sidebar-menu">
-          <button
-            type="button"
-            className={`admin-sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <LayoutGrid size={18} />
-            Dashboard
-          </button>
-          <button
-            type="button"
-            className={`admin-sidebar-item ${activeTab === 'complaints' ? 'active' : ''}`}
-            onClick={() => setActiveTab('complaints')}
-          >
-            <FileText size={18} />
-            Complaints
-          </button>
-          <button
-            type="button"
-            className={`admin-sidebar-item ${activeTab === 'citizens' ? 'active' : ''}`}
-            onClick={() => setActiveTab('citizens')}
-          >
-            <Users size={18} />
-            Citizens
-          </button>
-        </nav>
-
-        <button
-          type="button"
-          className="admin-sidebar-logout"
-          onClick={logout}
-        >
-          <LogOut size={18} />
-          Sign Out
-        </button>
-      </aside>
-
       {/* Main Content Area */}
       <main className="admin-main-content">
         {/* Stats Grid Card */}
