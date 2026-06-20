@@ -3739,7 +3739,7 @@ textarea:focus-visible {
 }
 
 .landing-timeline-card.inverted .landing-card-title {
-  color: var(--primary-navy);
+  color: #ffffff;
 }
 
 .landing-card-desc {
@@ -3749,7 +3749,7 @@ textarea:focus-visible {
 }
 
 .landing-timeline-card.inverted .landing-card-desc {
-  color: rgba(26, 36, 56, 0.8);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Category Grid Section */
