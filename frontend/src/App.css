@@ -4068,6 +4068,50 @@ textarea:focus-visible {
 .status-resolved { background-color: #22c55e; color: #fff; }
 .status-review { background-color: #6b7280; color: #fff; }
 
+.landing-feed-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  user-select: none;
+}
+
+.pagination-arrow-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-fade-70);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.pagination-arrow-btn:hover:not(:disabled) {
+  background-color: var(--orange-accent);
+  border-color: var(--orange-accent);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.pagination-arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pagination-page-indicator {
+  font-size: 0.9rem;
+  color: var(--white-fade-70);
+  font-weight: 500;
+  min-width: 48px;
+  text-align: center;
+}
+
 .landing-feed-actions {
   text-align: center;
   margin-top: 32px;
