@@ -107,27 +107,7 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
       </div>
 
       <nav className="topbar-nav-modern">
-        {!isAdmin && (
-          <>
-            <button
-              type="button"
-              className={`nav-tab-btn ${portal === 'citizen' ? 'active' : ''}`}
-              onClick={() => setPortal('citizen')}
-            >
-              <User size={14} style={{ marginRight: '6px' }} />
-              Citizen Portal
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${portal === 'admin' ? 'active' : ''}`}
-              onClick={() => setPortal('admin')}
-            >
-              <Shield size={14} style={{ marginRight: '6px' }} />
-              Admin Access
-            </button>
-          </>
-        )}
-        
+
         {session ? (
           <div className="header-session-block">
             {isAdmin ? (
