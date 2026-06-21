@@ -9,6 +9,7 @@ import {
   MoreHorizontal,
   ChevronRight,
 } from 'lucide-react';
+import GoogleMap from './GoogleMap';
 
 const TYPE_META = {
   'Broken street light problem': { icon: Lightbulb, hint: 'Flickering, non-functioning, dark street lights' },
@@ -96,47 +97,21 @@ export default function ComplaintForm({
             </div>
           </div>
 
-          {/* Location */}
+          {/* Citizen Location Info */}
           <div className="cf-field-new" style={{ marginTop: '20px' }}>
             <label className="cf-label-new">
-              Exact Location
+              Citizen Location Info (Address/Landmark/Ward) *
             </label>
             <input
               required
               type="text"
               className="cf-input-new"
-              placeholder="Street, landmark, ward, area"
-              value={complaintForm.location}
+              placeholder="Enter your home address, landmark, or ward"
+              value={complaintForm.citizenLocation || ''}
               onChange={(e) =>
-                setComplaintForm((current) => ({ ...current, location: e.target.value }))
+                setComplaintForm((current) => ({ ...current, citizenLocation: e.target.value }))
               }
             />
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="cf-col-new">
-          {/* Description */}
-          <div className="cf-field-new">
-            <label className="cf-label-new">
-              Detailed Description *
-            </label>
-            <div style={{ position: 'relative' }}>
-              <textarea
-                required
-                rows="5"
-                maxLength={MAX_DESC}
-                className="cf-textarea-new"
-                placeholder="Explain the issue, how long it has been there, and any safety hazards."
-                value={complaintForm.description}
-                onChange={(e) =>
-                  setComplaintForm((current) => ({ ...current, description: e.target.value }))
-                }
-              />
-              <span className="cf-desc-char-limit font-mono">
-                {descLen}/{MAX_DESC}
-              </span>
-            </div>
           </div>
 
           {/* Upload Proof */}
@@ -197,6 +172,64 @@ export default function ComplaintForm({
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="cf-col-new">
+          {/* Description */}
+          <div className="cf-field-new">
+            <label className="cf-label-new">
+              Detailed Description *
+            </label>
+            <div style={{ position: 'relative' }}>
+              <textarea
+                required
+                rows="5"
+                maxLength={MAX_DESC}
+                className="cf-textarea-new"
+                placeholder="Explain the issue, how long it has been there, and any safety hazards."
+                value={complaintForm.description}
+                onChange={(e) =>
+                  setComplaintForm((current) => ({ ...current, description: e.target.value }))
+                }
+              />
+              <span className="cf-desc-char-limit font-mono">
+                {descLen}/{MAX_DESC}
+              </span>
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="cf-field-new" style={{ marginTop: '20px' }}>
+            <label className="cf-label-new">
+              Exact Location (Map) *
+            </label>
+            <input
+              required
+              readOnly
+              type="text"
+              className="cf-input-new"
+              placeholder="Coordinates will populate when you pin location on map below..."
+              value={complaintForm.location}
+              style={{ backgroundColor: 'rgba(26, 36, 56, 0.02)', cursor: 'not-allowed' }}
+            />
+            <div style={{ marginTop: '10px' }}>
+              <GoogleMap
+                mode="form"
+                latitude={complaintForm.latitude}
+                longitude={complaintForm.longitude}
+                address={complaintForm.location}
+                onChangeLocation={({ latitude, longitude, address }) => {
+                  setComplaintForm((current) => ({
+                    ...current,
+                    latitude,
+                    longitude,
+                    location: address || current.location
+                  }));
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

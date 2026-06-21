@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Tag, Send, Maximize2, Star, CheckCircle2 } from 'lucide-react';
+import { MapPin, Tag, Send, Maximize2, Star, CheckCircle2, Home } from 'lucide-react';
 import Timeline from './Timeline';
+import GoogleMap from './GoogleMap';
 
 export default function ComplaintDetail({
   selectedComplaint,
@@ -120,15 +121,34 @@ export default function ComplaintDetail({
                 <Tag size={13} style={{ marginRight: '6px' }} />
                 {selectedComplaint.type}
               </span>
-              <span className="detail-tag-chip-new">
+              <span className="detail-tag-chip-new" title="Issue Location">
                 <MapPin size={13} style={{ marginRight: '6px' }} />
                 {selectedComplaint.location}
               </span>
+              {selectedComplaint.citizenLocation && (
+                <span className="detail-tag-chip-new" title="Citizen Home Location Info">
+                  <Home size={13} style={{ marginRight: '6px' }} />
+                  Home: {selectedComplaint.citizenLocation}
+                </span>
+              )}
               <span className="detail-tag-chip-new">
                 <Send size={13} style={{ marginRight: '6px' }} />
                 {selectedComplaint.forwardedTo ? `Forwarded: ${selectedComplaint.forwardedTo}` : 'Unassigned'}
               </span>
             </div>
+
+            {selectedComplaint.latitude && selectedComplaint.longitude && (
+              <div className="detail-map-container" style={{ marginTop: '16px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Exact Coordinates Location
+                </div>
+                <GoogleMap
+                  mode="detail"
+                  latitude={selectedComplaint.latitude}
+                  longitude={selectedComplaint.longitude}
+                />
+              </div>
+            )}
           </div>
 
           <div className="detail-timeline-box-new">
@@ -136,7 +156,7 @@ export default function ComplaintDetail({
             <Timeline updates={selectedComplaint.updates} />
           </div>
 
-          {selectedComplaint.status === 'Resolved' && (
+          {selectedComplaint.status === 'Resolved' && session?.role === 'citizen' && (
             <div className="detail-review-box-new" style={{ marginTop: '2rem', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(15, 118, 110, 0.15)', background: 'var(--panel-glass-solid, rgba(255, 255, 255, 0.96))' }}>
               {selectedComplaint.isReviewed || isSubmitted ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '8px' }}>

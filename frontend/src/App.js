@@ -34,8 +34,11 @@ const EMPTY_COMPLAINT_FORM = {
   title: '',
   type: complaintTypes[0],
   location: '',
+  citizenLocation: '',
   description: '',
   images: [],
+  latitude: null,
+  longitude: null,
 };
 
 const EMPTY_LOGIN_FORM = { phone: '', password: '' };
@@ -92,6 +95,20 @@ function App() {
         localStorage.removeItem('fixmycity-api-url');
       } else {
         localStorage.setItem('fixmycity-api-url', trimmed.replace(/\/$/, "")); // Trim trailing slash
+      }
+      window.location.reload();
+    }
+  };
+
+  const changeGoogleMapsApiKey = () => {
+    const current = localStorage.getItem('fixmycity-google-maps-api-key') || process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+    const newKey = prompt("Enter Google Maps API Key (leave blank for development mode):", current);
+    if (newKey !== null) {
+      const trimmed = newKey.trim();
+      if (trimmed === '') {
+        localStorage.removeItem('fixmycity-google-maps-api-key');
+      } else {
+        localStorage.setItem('fixmycity-google-maps-api-key', trimmed);
       }
       window.location.reload();
     }
@@ -350,12 +367,15 @@ async function handleComplaintSubmit(event) {
         body: JSON.stringify({
           citizenName: session.name,
           citizenPhone: session.phone,
+          citizenLocation: complaintForm.citizenLocation.trim(),
           title: complaintForm.title.trim(),
           type: complaintForm.type,
           location: complaintForm.location.trim(),
           description: complaintForm.description.trim(),
           images: complaintForm.images,
           image: complaintForm.images[0] ?? '',
+          latitude: complaintForm.latitude,
+          longitude: complaintForm.longitude,
         }),
       });
 
@@ -498,7 +518,15 @@ async function handleComplaintSubmit(event) {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="app-shell">
-      {session && <Header portal={portal} setPortal={setPortal} session={session} logout={logout} />}
+      {session && (
+        <Header 
+          portal={portal} 
+          setPortal={setPortal} 
+          session={session} 
+          logout={logout} 
+          changeGoogleMapsApiKey={changeGoogleMapsApiKey} 
+        />
+      )}
 
       <main className={`page-content ${session?.role === 'admin' ? 'admin-page-content' : ''}`}>
         {session?.role === 'citizen' ? (

@@ -169,9 +169,11 @@ async function seedDatabase() {
           id: 'CMP-2401', citizenName: 'Aarav Sen', citizenPhone: '9876543210',
           title: 'Large potholes near market road', type: 'Potholes',
           location: 'MG Road, near City Market Gate 2',
+          citizenLocation: 'Flat 402, Block A, Green Meadows, Bangalore',
           description: 'Two deep potholes are causing traffic jams and bike skids during evening hours.',
           status: 'In Review', forwardedTo: 'Road Maintenance Cell',
           updatedAt: '2026-06-08 10:30', createdAt: '2026-06-07 18:45',
+          latitude: 12.9748, longitude: 77.6087,
           image: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80',
           images: ['https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=900&q=80'],
           updates: [
@@ -183,9 +185,11 @@ async function seedDatabase() {
           id: 'CMP-2402', citizenName: 'Diya Kapoor', citizenPhone: '9123456780',
           title: 'Overflowing roadside drain', type: 'Drainage problem',
           location: 'Lake View Colony, Block B',
+          citizenLocation: 'Villa 12, Lake View Colony, Bangalore',
           description: 'Drain water is overflowing onto the road and creating a strong smell near the school entrance.',
           status: 'Forwarded', forwardedTo: 'Drainage and Sanitation Department',
           updatedAt: '2026-06-08 09:10', createdAt: '2026-06-06 14:20',
+          latitude: 12.9848, longitude: 77.6187,
           image: 'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80',
           images: ['https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=900&q=80'],
           updates: [
@@ -327,7 +331,7 @@ app.get('/api/complaints', async (req, res) => {
 
 app.post('/api/complaints', async (req, res) => {
   try {
-    const { citizenName, citizenPhone, title, type, location, description, images, image } = req.body;
+    const { citizenName, citizenPhone, citizenLocation, title, type, location, description, images, image, latitude, longitude } = req.body;
     if (!citizenName || !citizenPhone || !title || !type || !location || !description) {
       return res.status(400).json({ message: 'Required fields are missing.' });
     }
@@ -381,11 +385,13 @@ app.post('/api/complaints', async (req, res) => {
 
     const timestamp = getFormattedDate();
     const newComplaint = new Complaint({
-      id: complaintId, citizenName, citizenPhone, title, type, location, description,
+      id: complaintId, citizenName, citizenPhone, citizenLocation: citizenLocation || '', title, type, location, description,
       status: 'Submitted', forwardedTo: '',
       image: image || '', images: images || [],
       updates: [{ label: 'Submitted', note: 'Complaint registered by citizen.', at: timestamp }],
       imageCheck, createdAt: timestamp, updatedAt: timestamp,
+      latitude: latitude || null,
+      longitude: longitude || null,
     });
     await newComplaint.save();
     res.status(201).json(newComplaint);

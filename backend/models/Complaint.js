@@ -52,6 +52,10 @@ const ComplaintSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  citizenLocation: {
+    type: String,
+    default: '',
+  },
   title: {
     type: String,
     required: true,
@@ -92,6 +96,14 @@ const ComplaintSchema = new mongoose.Schema({
   imageCheck: {
     type: ImageCheckSchema,
     default: () => ({}),
+  },
+  latitude: {
+    type: Number,
+    default: null,
+  },
+  longitude: {
+    type: Number,
+    default: null,
   },
   createdAt: {
     type: String,

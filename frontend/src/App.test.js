@@ -1,14 +1,36 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
+beforeEach(() => {
+  // Mock global fetch
+  global.fetch = jest.fn((url) => {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
+  });
+
+  // Mock global IntersectionObserver for framer-motion compatibility in Jest/JSDOM
+  global.IntersectionObserver = class IntersectionObserver {
+    constructor() {}
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 test('renders FixMyCity hero content', () => {
   render(<App />);
   expect(
     screen.getByRole('heading', {
-      name: /FixMyCity helps citizens report issues and follow every update/i,
+      name: /Report\.\s*Track\.\s*Fix\./i,
     })
   ).toBeInTheDocument();
   expect(
-    screen.getByText(/Citizen issue reporting system/i)
+    screen.getByText(/Spotted a pothole, broken streetlight/i)
   ).toBeInTheDocument();
 });

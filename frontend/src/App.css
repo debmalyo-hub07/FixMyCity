@@ -6736,9 +6736,14 @@ textarea:focus-visible {
   border-bottom: 1px solid rgba(26, 36, 56, 0.08);
 }
 
+.action-buttons-group {
+  display: flex;
+  gap: 10px;
+}
+
 .admin-action-btn-top {
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 10px 18px;
+  border-radius: 6px;
   font-family: 'Barlow', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
@@ -6746,34 +6751,47 @@ textarea:focus-visible {
   letter-spacing: 0.04em;
   border: none;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
-.admin-action-btn-top.approve {
-  background-color: #2563eb;
+.admin-action-btn-top.approve.active,
+.admin-action-btn-top.forward.active,
+.admin-action-btn-top.solve.active {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+.admin-action-btn-top.approve.active:hover,
+.admin-action-btn-top.forward.active:hover,
+.admin-action-btn-top.solve.active:hover {
+  background-color: rgba(239, 68, 68, 0.05);
+  transform: translateY(-1px);
+}
+
+.admin-action-btn-top.approve.clicked,
+.admin-action-btn-top.forward.clicked,
+.admin-action-btn-top.solve.clicked {
+  background-color: #E85D26;
   color: #ffffff;
+  border: 1px solid #E85D26;
+  opacity: 1;
 }
 
-.admin-action-btn-top.approve:hover {
-  background-color: #1d4ed8;
+.admin-action-btn-top.approve.clicked:hover,
+.admin-action-btn-top.forward.clicked:hover,
+.admin-action-btn-top.solve.clicked:hover {
+  background-color: #d8501c;
+  border-color: #d8501c;
+  transform: none;
 }
 
-.admin-action-btn-top.forward {
-  background-color: #1a2438;
-  color: #ffffff;
-}
-
-.admin-action-btn-top.forward:hover {
-  background-color: #111622;
-}
-
-.admin-action-btn-top.solve {
-  background-color: #16a34a;
-  color: #ffffff;
-}
-
-.admin-action-btn-top.solve:hover {
-  background-color: #15803d;
+.admin-action-btn-top.approve.clicked:disabled,
+.admin-action-btn-top.forward.clicked:disabled,
+.admin-action-btn-top.solve.clicked:disabled {
+  opacity: 1;
+  cursor: default;
 }
 
 .admin-action-btn-top.delete {
@@ -7063,5 +7081,161 @@ textarea:focus-visible {
   }
 }
 
+/* --- Google Maps Integration Styles --- */
+.map-wrapper-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.15); /* matching --brand teal accent */
+  background: #ffffff;
+  margin-top: 10px;
+}
+
+.map-wrapper-card.form {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.map-search-bar-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.map-search-input {
+  flex: 1;
+  height: 48px;
+  border-radius: 0;
+  border: 1px solid rgba(26, 36, 56, 0.15);
+  font-size: 1rem;
+  color: #1A2438;
+  outline: none;
+  background-color: #F5EFEB;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.map-search-input:focus {
+  border-color: #1A2438;
+  box-shadow: 0 0 0 2px rgba(26, 36, 56, 0.08);
+}
+
+.map-locate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, var(--brand, #0f766e), var(--brand-hover, #0b5250));
+  color: #ffffff;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);
+  transition: all 0.2s ease;
+}
+
+.map-locate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);
+}
+
+.map-locate-btn:active {
+  transform: translateY(0);
+}
+
+.map-locate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.map-toggle-view-btn {
+  font-family: 'Barlow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand, #0f766e);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  padding: 4px 0;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.map-toggle-view-btn:hover {
+  color: var(--brand-hover, #0b5250) !important;
+}
+
+.map-loading-placeholder,
+.map-error-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 250px;
+  background: #f8fafc;
+  color: var(--text-muted, #64748b);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.map-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(15, 118, 110, 0.15);
+  border-top-color: var(--brand, #0f766e);
+  border-radius: 50%;
+  animation: map-spin 0.8s linear infinite;
+}
+
+.map-retry-btn {
+  padding: 8px 16px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@keyframes map-spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: map-spin 1s linear infinite;
+}
+
+/* Map overview frame in admin dashboard */
+.admin-map-view-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.1);
+}
+
+.admin-map-view-container .map-canvas-div {
+  height: calc(100vh - 280px) !important;
+}
+
+/* Styles inside Google Maps InfoWindow */
+.gm-style-iw {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12) !important;
+}
+
+.gm-style-iw-d {
+  overflow: auto !important;
+}
 
 

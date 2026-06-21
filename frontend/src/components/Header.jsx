@@ -1,7 +1,7 @@
 import React from 'react';
-import { Shield, User, LogOut, Bell, ChevronDown } from 'lucide-react';
+import { Shield, User, LogOut, Bell, ChevronDown, Settings } from 'lucide-react';
 
-export default function Header({ portal, setPortal, session, logout }) {
+export default function Header({ portal, setPortal, session, logout, changeGoogleMapsApiKey }) {
   const isAdmin = session?.role === 'admin';
 
   const initials = session?.name
@@ -69,6 +69,15 @@ export default function Header({ portal, setPortal, session, logout }) {
                 <button 
                   type="button" 
                   className="header-logout-btn" 
+                  onClick={changeGoogleMapsApiKey}
+                  title="Configure Google Maps API Key"
+                  style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}
+                >
+                  <Settings size={14} />
+                </button>
+                <button 
+                  type="button" 
+                  className="header-logout-btn" 
                   onClick={logout}
                   title="Sign Out"
                   style={{ marginLeft: '12px', display: 'flex', alignItems: 'center' }}
@@ -80,6 +89,15 @@ export default function Header({ portal, setPortal, session, logout }) {
               <>
                 <div className="header-avatar-box">{initials}</div>
                 <span className="header-username">{session.name}</span>
+                <button 
+                  type="button" 
+                  className="header-logout-btn" 
+                  onClick={changeGoogleMapsApiKey}
+                  title="Configure Google Maps API Key"
+                  style={{ marginRight: '8px' }}
+                >
+                  <Settings size={14} />
+                </button>
                 <button 
                   type="button" 
                   className="header-logout-btn" 
