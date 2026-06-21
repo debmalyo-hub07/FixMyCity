@@ -84,7 +84,20 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
           <img src="/fmc-logo.jpeg" alt="FMC Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div className="brand-text-modern" style={{ display: 'flex', flexDirection: 'column' }}>
-          <span className="brand-name-text" style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: '1.25rem', textTransform: 'uppercase', color: '#F4EFE4', lineHeight: 1.1 }}>
+          <span 
+            className="brand-name-text" 
+            style={{ 
+              fontFamily: 'Barlow Condensed', 
+              fontWeight: 800, 
+              fontSize: '1.25rem', 
+              textTransform: 'uppercase', 
+              color: '#F4EFE4', 
+              lineHeight: 1.1,
+              background: 'none',
+              WebkitBackgroundClip: 'initial',
+              WebkitTextFillColor: 'initial',
+            }}
+          >
             Fix<span style={{ color: '#F0E840' }}>My</span>City
           </span>
           <span className="brand-tagline-text" style={{ fontFamily: 'DM Mono', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
