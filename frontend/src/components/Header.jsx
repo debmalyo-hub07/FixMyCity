@@ -1,34 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Shield, User, LogOut, Bell, ChevronDown, Settings, Phone, BadgeCheck, Mail, FileText, Edit, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, User, LogOut, ChevronDown, Phone, BadgeCheck, Mail, FileText, Edit, X } from 'lucide-react';
 
 export default function Header({ portal, setPortal, session, logout, changeGoogleMapsApiKey, updateProfile }) {
   const isAdmin = session?.role === 'admin';
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
   // Profile Edit modal states
   const [modalOpen, setModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', phone: '', aadhar: '', email: '' });
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
-
-  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
-  const adminDropdownRef = useRef(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-      if (adminDropdownRef.current && !adminDropdownRef.current.contains(e.target)) {
-        setAdminDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
@@ -112,17 +92,10 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
           <div className="header-session-block">
             {isAdmin ? (
               <div className="admin-header-right">
-                <div className="admin-bell-btn" title="Notifications">
-                  <Bell size={16} color="#ffffff" />
-                  <span className="admin-bell-badge" />
-                </div>
-                 <div className="admin-user-dropdown-container" ref={adminDropdownRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                 <div className="admin-user-dropdown-container">
                   <button
                     type="button"
                     className="admin-user-trigger"
-                    onClick={() => setAdminDropdownOpen((o) => !o)}
-                    aria-haspopup="true"
-                    aria-expanded={adminDropdownOpen}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -142,15 +115,12 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
                     <ChevronDown
                       size={12}
                       color="rgba(255,255,255,0.6)"
-                      style={{
-                        transition: 'transform 0.25s ease',
-                        transform: adminDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                      }}
+                      className="dropdown-chevron"
                     />
                   </button>
 
-                  {adminDropdownOpen && (
-                    <div className="citizen-dropdown-menu" style={{ top: 'calc(100% + 12px)', right: 0 }}>
+                  <div className="citizen-dropdown-menu" style={{ right: 0 }}>
+                    <div className="citizen-dropdown-menu-content">
                       {/* Profile header */}
                       <div className="citizen-dropdown-profile">
                         <div className="citizen-dropdown-avatar" style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)', color: '#ffffff', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)' }}>
@@ -192,49 +162,33 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
                         <button
                           type="button"
                           className="citizen-dropdown-action-btn citizen-dropdown-signout"
-                          onClick={() => { logout(); setAdminDropdownOpen(false); }}
+                          onClick={logout}
                         >
                           <LogOut size={14} />
                           <span>Sign Out</span>
                         </button>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-
-                <button 
-                  type="button" 
-                  className="header-logout-btn" 
-                  onClick={changeGoogleMapsApiKey}
-                  title="Configure Google Maps API Key"
-                  style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}
-                >
-                  <Settings size={14} />
-                </button>
               </div>
             ) : (
-              <div className="citizen-user-dropdown" ref={dropdownRef}>
+              <div className="citizen-user-dropdown">
                 <button
                   type="button"
                   className="citizen-user-trigger"
-                  onClick={() => setDropdownOpen((o) => !o)}
-                  aria-haspopup="true"
-                  aria-expanded={dropdownOpen}
                 >
                   <div className="header-avatar-box">{initials}</div>
                   <span className="header-username">{session.name}</span>
                   <ChevronDown
                     size={13}
                     color="rgba(255,255,255,0.5)"
-                    style={{
-                      transition: 'transform 0.25s ease',
-                      transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }}
+                    className="dropdown-chevron"
                   />
                 </button>
 
-                {dropdownOpen && (
-                  <div className="citizen-dropdown-menu">
+                <div className="citizen-dropdown-menu">
+                  <div className="citizen-dropdown-menu-content">
                     {/* Profile header */}
                     <div className="citizen-dropdown-profile">
                       <div className="citizen-dropdown-avatar">{initials}</div>
@@ -298,7 +252,6 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
                           setEditError('');
                           setEditSuccess('');
                           setModalOpen(true);
-                          setDropdownOpen(false);
                         }}
                       >
                         <Edit size={14} />
@@ -307,14 +260,14 @@ export default function Header({ portal, setPortal, session, logout, changeGoogl
                       <button
                         type="button"
                         className="citizen-dropdown-action-btn citizen-dropdown-signout"
-                        onClick={() => { logout(); setDropdownOpen(false); }}
+                        onClick={logout}
                       >
                         <LogOut size={14} />
                         <span>Sign Out</span>
                       </button>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
           </div>
