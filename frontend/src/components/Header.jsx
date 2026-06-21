@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Shield, User, LogOut, Bell, ChevronDown } from 'lucide-react';
+import { Shield, User, LogOut, Bell, ChevronDown } from 'lucide-react';
 
 export default function Header({ portal, setPortal, session, logout }) {
   const isAdmin = session?.role === 'admin';
@@ -17,7 +17,7 @@ export default function Header({ portal, setPortal, session, logout }) {
     <header className="topbar-modern">
       <div className="brand-modern">
         <div className="landing-logo-box" style={{ marginRight: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <MapPin size={16} color="#ffffff" strokeWidth={3} />
+          <img src="/fmc-logo.jpeg" alt="FMC Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div className="brand-text-modern" style={{ display: 'flex', flexDirection: 'column' }}>
           <span className="brand-name-text" style={{ fontFamily: 'Barlow Condensed', fontWeight: 800, fontSize: '1.25rem', textTransform: 'uppercase', color: '#F4EFE4', lineHeight: 1.1 }}>
