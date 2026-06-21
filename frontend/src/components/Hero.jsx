@@ -233,7 +233,7 @@ export default function Hero({
         <div className="landing-nav-container">
           <a href="#top" className="landing-brand">
             <div className="landing-logo-box">
-              <MapPin size={16} color="#ffffff" strokeWidth={3} />
+              <MapPin size={16} strokeWidth={3} />
             </div>
             <span className="landing-brand-text">
               Fix<span>My</span>City

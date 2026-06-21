@@ -3100,6 +3100,11 @@ textarea:focus-visible {
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  transition: opacity 0.25s ease;
+}
+
+.landing-brand:hover {
+  opacity: 0.95;
 }
 
 .landing-logo-box {
@@ -3109,6 +3114,27 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 6px;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-logo-box svg {
+  color: #ffffff;
+  transition: color 0.3s ease, stroke 0.3s ease;
+}
+
+.landing-brand:hover .landing-logo-box {
+  transform: scale(1.15) rotate(12deg);
+  background-color: var(--yellow-accent);
+  box-shadow: 0 0 12px rgba(240, 232, 64, 0.4);
+}
+
+.landing-brand:hover .landing-logo-box svg {
+  color: #1a2438;
+}
+
+.landing-brand:hover .landing-brand-text {
+  text-shadow: 0 0 10px rgba(240, 232, 64, 0.3);
 }
 
 .landing-brand-text {
@@ -3118,6 +3144,7 @@ textarea:focus-visible {
   color: var(--primary-fg);
   text-transform: uppercase;
   letter-spacing: -0.01em;
+  transition: text-shadow 0.3s ease;
 }
 
 .landing-brand-text span {
@@ -3136,15 +3163,37 @@ textarea:focus-visible {
 }
 
 .landing-nav-link {
+  position: relative;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--white-fade-70);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease, transform 0.25s ease, text-shadow 0.25s ease;
+  padding: 6px 0;
+}
+
+.landing-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--orange-accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .landing-nav-link:hover {
   color: var(--primary-fg);
+  transform: translateY(-1.5px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.landing-nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .landing-nav-actions {
@@ -3168,11 +3217,18 @@ textarea:focus-visible {
   border: none;
   padding: 8px 16px;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease-in-out;
+  outline: none;
 }
 
 .landing-btn-text:hover {
   color: var(--primary-fg);
+  transform: translateY(-1px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.landing-btn-text:active {
+  transform: translateY(0);
 }
 
 .landing-btn-accent {
@@ -3185,11 +3241,45 @@ textarea:focus-visible {
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: background-color 0.2s ease;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-btn-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: 0.75s;
+  pointer-events: none;
+}
+
+.landing-btn-accent:hover::before {
+  left: 125%;
+  transition: all 0.75s ease-in-out;
 }
 
 .landing-btn-accent:hover {
   background-color: #d8501c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 93, 38, 0.3);
+}
+
+.landing-btn-accent:active {
+  transform: translateY(-0.5px);
+  box-shadow: 0 2px 6px rgba(232, 93, 38, 0.2);
 }
 
 .landing-menu-toggle {
@@ -4690,6 +4780,30 @@ textarea:focus-visible {
   padding: 12px 5vw !important;
 }
 
+/* Brand modern hover animations */
+.brand-modern {
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.brand-modern:hover {
+  opacity: 0.95;
+}
+
+.brand-modern:hover .landing-logo-box {
+  transform: scale(1.15) rotate(12deg);
+  background-color: #F0E840 !important;
+  box-shadow: 0 0 12px rgba(240, 232, 64, 0.4);
+}
+
+.brand-modern:hover .landing-logo-box svg {
+  stroke: #1a2438 !important;
+}
+
+.brand-modern:hover .brand-name-text {
+  text-shadow: 0 0 8px rgba(244, 239, 228, 0.2);
+}
+
 .topbar-nav-modern {
   display: flex;
   align-items: center;
@@ -4709,10 +4823,24 @@ textarea:focus-visible {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: none !important;
   border-radius: 0 !important;
   height: auto !important;
+  position: relative;
+}
+
+.topbar-nav-modern .nav-tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #F0E840;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .topbar-nav-modern .nav-tab-btn.active {
@@ -4720,8 +4848,24 @@ textarea:focus-visible {
   color: #ffffff !important;
 }
 
+.topbar-nav-modern .nav-tab-btn.active::after {
+  transform: scaleX(1);
+  background-color: #ffffff;
+}
+
 .topbar-nav-modern .nav-tab-btn:not(.active):hover {
   color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  transform: translateY(-1px);
+}
+
+.topbar-nav-modern .nav-tab-btn:not(.active):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.topbar-nav-modern .nav-tab-btn:active {
+  transform: translateY(0);
 }
 
 .header-session-block {
@@ -4744,6 +4888,12 @@ textarea:focus-visible {
   font-weight: 800;
   font-size: 0.875rem;
   border-radius: 2px;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+}
+
+.header-avatar-box:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 10px rgba(240, 232, 64, 0.5);
 }
 
 .header-username {
@@ -4764,8 +4914,17 @@ textarea:focus-visible {
   transition: color 0.2s ease;
 }
 
+.header-logout-btn svg {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
 .header-logout-btn:hover {
   color: #ffffff;
+}
+
+.header-logout-btn:hover svg {
+  transform: translateX(3px) scale(1.1);
+  color: #ef4444;
 }
 
 /* Welcome Banner */
@@ -5922,6 +6081,16 @@ textarea:focus-visible {
   gap: 20px;
 }
 
+@keyframes bellShake {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(10deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(5deg); }
+  60% { transform: rotate(-5deg); }
+  75% { transform: rotate(2deg); }
+  90% { transform: rotate(-2deg); }
+}
+
 .admin-bell-btn {
   position: relative;
   cursor: pointer;
@@ -5933,8 +6102,16 @@ textarea:focus-visible {
   transition: color 0.2s ease;
 }
 
+.admin-bell-btn svg {
+  transition: transform 0.2s ease;
+}
+
 .admin-bell-btn:hover {
   color: #ffffff;
+}
+
+.admin-bell-btn:hover svg {
+  animation: bellShake 0.6s ease;
 }
 
 .admin-bell-badge {
@@ -5957,8 +6134,22 @@ textarea:focus-visible {
   transition: background-color 0.2s ease;
 }
 
+.admin-user-dropdown svg {
+  transition: transform 0.2s ease;
+}
+
 .admin-user-dropdown:hover {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-user-dropdown:hover svg:last-child {
+  transform: translateY(1.5px);
+}
+
+.admin-user-dropdown:hover .admin-avatar-box {
+  transform: scale(1.05);
+  background-color: #F0E840;
+  color: #1a2438;
 }
 
 .admin-avatar-box {
@@ -5970,6 +6161,7 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   border-radius: 2px;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .admin-username {
