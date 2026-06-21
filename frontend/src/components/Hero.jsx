@@ -22,7 +22,8 @@ import {
   FileText,
   Settings,
   Eye,
-  EyeOff
+  EyeOff,
+  Mail
 } from 'lucide-react';
 
 export default function Hero({
@@ -739,6 +740,39 @@ export default function Hero({
                 <a href="#top" onClick={(e) => e.preventDefault()}>Blog</a>
                 <a href="#top" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
                 <a href="#top" onClick={(e) => e.preventDefault()}>Terms of Service</a>
+              </div>
+            </div>
+
+            <div className="landing-footer-col">
+              <h4>Contact Us</h4>
+              <div className="landing-footer-contact-icons">
+                <a
+                  href="mailto:rounakthakur49@gmail.com"
+                  className="landing-contact-icon-btn"
+                  title="Email Us"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Mail size={20} />
+                </a>
+                <a
+                  href="https://wa.me/917001451653"
+                  className="landing-contact-icon-btn whatsapp-btn"
+                  title="WhatsApp Us"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.288 1.488 4.96.489 1.67-.001 3.33-.5 4.96-1.489l.356-.21 3.672.961-.979-3.578.232-.369c1.077-1.714 1.644-3.705 1.644-5.753C21.09 6.275 17.01 2.2 12.01 2.2 7.009 2.2 2.93 6.275 2.93 11.277c0 2.054.566 4.045 1.643 5.759l.233.369-.979 3.579 3.672-.962.356.211zm11.258-5.32c-.3-.15-1.771-.875-2.029-.969-.258-.094-.446-.14-.633.14-.187.281-.726.912-.89 1.092-.164.18-.328.201-.628.05-3.002-1.503-4.385-2.73-5.263-4.24-.234-.403.234-.373.67-.1.391-.356.5-1.121.5-1.4-.047-.281-.234-1.219-.328-1.5-.094-.281-.187-.234-.328-.234-.141 0-.328-.047-.516-.047-.188 0-.516.07-.797.375-.281.305-1.078 1.055-1.078 2.578 0 1.523 1.109 2.992 1.266 3.195.156.203 2.18 3.328 5.281 4.664.738.318 1.312.507 1.758.65.742.234 1.414.201 1.945.122.592-.088 1.772-.724 2.022-1.391.25-.667.25-1.238.175-1.391-.075-.152-.258-.244-.558-.394z"/>
+                  </svg>
+                </a>
+                <a
+                  href="tel:+917001451653"
+                  className="landing-contact-icon-btn call-btn"
+                  title="Call Us"
+                >
+                  <Phone size={20} />
+                </a>
               </div>
             </div>
           </div>

@@ -4270,9 +4270,16 @@ textarea:focus-visible {
   margin-bottom: 48px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   .landing-footer-grid {
-    grid-template-columns: 1.5fr repeat(3, 1fr);
+    grid-template-columns: 1.5fr repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 991px) {
+  .landing-footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
   }
 }
 
@@ -4306,6 +4313,46 @@ textarea:focus-visible {
 
 .landing-footer-links a:hover {
   color: var(--primary-fg);
+}
+
+.landing-footer-contact-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.landing-contact-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-fade-70);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.landing-contact-icon-btn:hover {
+  background-color: var(--orange-accent);
+  color: #fff;
+  border-color: var(--orange-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 93, 38, 0.3);
+}
+
+.landing-contact-icon-btn.whatsapp-btn:hover {
+  background-color: #25D366;
+  border-color: #25D366;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.landing-contact-icon-btn.call-btn:hover {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .landing-footer-bottom {
