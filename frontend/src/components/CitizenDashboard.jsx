@@ -6,10 +6,12 @@ import {
   FileText,
   PlusCircle,
   BarChart2,
+  Send,
 } from 'lucide-react';
 import ComplaintForm from './ComplaintForm';
 import ComplaintList from './ComplaintList';
 import ComplaintDetail from './ComplaintDetail';
+import GoogleMap from './GoogleMap';
 
 export default function CitizenDashboard({
   session,
@@ -30,6 +32,7 @@ export default function CitizenDashboard({
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'track'
   const [mobileTrackView, setMobileTrackView] = useState('list'); // 'list' or 'detail'
   const [maximizedImage, setMaximizedImage] = useState(null);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -48,7 +51,8 @@ export default function CitizenDashboard({
 
   const citizenStats = {
     total: currentCitizenComplaints.length,
-    open: currentCitizenComplaints.filter((item) => item.status !== 'Resolved').length,
+    pending: currentCitizenComplaints.filter((item) => item.status === 'Submitted' || item.status === 'In Review').length,
+    forwarded: currentCitizenComplaints.filter((item) => item.status === 'Forwarded').length,
     resolved: currentCitizenComplaints.filter((item) => item.status === 'Resolved').length,
   };
 
@@ -107,33 +111,43 @@ export default function CitizenDashboard({
         
       </motion.div>
 
-      {/* 3-column stats row */}
-      <motion.div className="cz-stats-row" variants={cardVariants}>
-        <div className="cz-stat-col tone-blue">
-          <div className="cz-stat-icon-wrapper">
-            <FileText size={20} color="#1A2438" />
+      {/* 4-column stats row */}
+      <motion.div className="admin-stats-card-row" variants={cardVariants} style={{ marginBottom: '24px' }}>
+        <div className="admin-stat-card-col">
+          <div className="admin-stat-card-icon bg-blue-soft">
+            <FileText size={18} color="#1A2438" />
           </div>
-          <div className="cz-stat-text-group">
+          <div className="admin-stat-card-text">
             <h3>{citizenStats.total}</h3>
-            <span>Your Complaints</span>
+            <span>Total Complaints</span>
           </div>
         </div>
 
-        <div className="cz-stat-col tone-warning">
-          <div className="cz-stat-icon-wrapper">
-            <Clock size={20} color="#E85D26" />
+        <div className="admin-stat-card-col">
+          <div className="admin-stat-card-icon bg-warning-soft">
+            <Clock size={18} color="#E85D26" />
           </div>
-          <div className="cz-stat-text-group">
-            <h3>{citizenStats.open}</h3>
-            <span>Open Cases</span>
+          <div className="admin-stat-card-text">
+            <h3>{citizenStats.pending}</h3>
+            <span>Pending Review</span>
           </div>
         </div>
 
-        <div className="cz-stat-col tone-success">
-          <div className="cz-stat-icon-wrapper">
-            <CheckCircle2 size={20} color="#22c55e" />
+        <div className="admin-stat-card-col">
+          <div className="admin-stat-card-icon bg-orange-soft">
+            <Send size={18} color="#ea580c" />
           </div>
-          <div className="cz-stat-text-group">
+          <div className="admin-stat-card-text">
+            <h3>{citizenStats.forwarded}</h3>
+            <span>Forwarded</span>
+          </div>
+        </div>
+
+        <div className="admin-stat-card-col">
+          <div className="admin-stat-card-icon bg-success-soft">
+            <CheckCircle2 size={18} color="#16a34a" />
+          </div>
+          <div className="admin-stat-card-text">
             <h3>{citizenStats.resolved}</h3>
             <span>Resolved</span>
           </div>
@@ -203,15 +217,73 @@ export default function CitizenDashboard({
               } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
               variants={cardVariants}
             >
-              <div className="cz-panel-head">
-                <h3>Track Filed Reports</h3>
-                <p>Select a complaint to watch its progress updates.</p>
+              <div className="admin-list-header-new" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(26, 36, 56, 0.08)', paddingBottom: '20px', marginBottom: '32px' }}>
+                <h3 style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "1.3rem",
+                  fontWeight: 800,
+                  color: "#1A2438",
+                  textTransform: "uppercase",
+                  margin: 0
+                }}>All Complaints</h3>
+                <div className="admin-view-toggle-tabs" style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(26, 36, 56, 0.05)', padding: '2px', borderRadius: '6px' }}>
+                  <button
+                    type="button"
+                    style={{
+                      border: 'none',
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      background: viewMode === 'list' ? '#ffffff' : 'transparent',
+                      color: viewMode === 'list' ? 'var(--brand)' : 'var(--text-muted)',
+                      boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onClick={() => setViewMode('list')}
+                  >
+                    List
+                  </button>
+                  <button
+                    type="button"
+                    style={{
+                      border: 'none',
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      background: viewMode === 'map' ? '#ffffff' : 'transparent',
+                      color: viewMode === 'map' ? 'var(--brand)' : 'var(--text-muted)',
+                      boxShadow: viewMode === 'map' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onClick={() => setViewMode('map')}
+                  >
+                    Map
+                  </button>
+                </div>
               </div>
-              <ComplaintList
-                complaints={currentCitizenComplaints}
-                selectedComplaintId={selectedComplaintId}
-                setSelectedComplaintId={handleSelectComplaint}
-              />
+
+              {viewMode === 'map' ? (
+                <div className="admin-map-view-container" style={{ padding: '0px', height: '400px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(26, 36, 56, 0.12)' }}>
+                  <GoogleMap
+                    mode="overview"
+                    complaints={currentCitizenComplaints}
+                    onSelectComplaint={(id) => {
+                      setSelectedComplaintId(id);
+                      setMobileTrackView('detail');
+                    }}
+                  />
+                </div>
+              ) : (
+                <ComplaintList
+                  complaints={currentCitizenComplaints}
+                  selectedComplaintId={selectedComplaintId}
+                  setSelectedComplaintId={handleSelectComplaint}
+                />
+              )}
             </motion.section>
 
             {/* Track: detail */}
