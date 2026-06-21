@@ -11,7 +11,6 @@ import {
 import ComplaintForm from './ComplaintForm';
 import ComplaintList from './ComplaintList';
 import ComplaintDetail from './ComplaintDetail';
-import GoogleMap from './GoogleMap';
 
 export default function CitizenDashboard({
   session,
@@ -32,7 +31,6 @@ export default function CitizenDashboard({
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'track'
   const [mobileTrackView, setMobileTrackView] = useState('list'); // 'list' or 'detail'
   const [maximizedImage, setMaximizedImage] = useState(null);
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -217,7 +215,7 @@ export default function CitizenDashboard({
               } ${activeTab === 'track' ? '' : 'cz-hidden-desktop'}`}
               variants={cardVariants}
             >
-              <div className="admin-list-header-new" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(26, 36, 56, 0.08)', paddingBottom: '20px', marginBottom: '32px' }}>
+              <div className="admin-list-header-new" style={{ borderBottom: '1px solid rgba(26, 36, 56, 0.08)', paddingBottom: '20px', marginBottom: '32px' }}>
                 <h3 style={{
                   fontFamily: "'Barlow Condensed', sans-serif",
                   fontSize: "1.3rem",
@@ -226,64 +224,13 @@ export default function CitizenDashboard({
                   textTransform: "uppercase",
                   margin: 0
                 }}>All Complaints</h3>
-                <div className="admin-view-toggle-tabs" style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(26, 36, 56, 0.05)', padding: '2px', borderRadius: '6px' }}>
-                  <button
-                    type="button"
-                    style={{
-                      border: 'none',
-                      padding: '4px 10px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      background: viewMode === 'list' ? '#ffffff' : 'transparent',
-                      color: viewMode === 'list' ? 'var(--brand)' : 'var(--text-muted)',
-                      boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                      transition: 'all 0.2s ease',
-                    }}
-                    onClick={() => setViewMode('list')}
-                  >
-                    List
-                  </button>
-                  <button
-                    type="button"
-                    style={{
-                      border: 'none',
-                      padding: '4px 10px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      background: viewMode === 'map' ? '#ffffff' : 'transparent',
-                      color: viewMode === 'map' ? 'var(--brand)' : 'var(--text-muted)',
-                      boxShadow: viewMode === 'map' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                      transition: 'all 0.2s ease',
-                    }}
-                    onClick={() => setViewMode('map')}
-                  >
-                    Map
-                  </button>
-                </div>
               </div>
 
-              {viewMode === 'map' ? (
-                <div className="admin-map-view-container" style={{ padding: '0px', height: '400px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(26, 36, 56, 0.12)' }}>
-                  <GoogleMap
-                    mode="overview"
-                    complaints={currentCitizenComplaints}
-                    onSelectComplaint={(id) => {
-                      setSelectedComplaintId(id);
-                      setMobileTrackView('detail');
-                    }}
-                  />
-                </div>
-              ) : (
-                <ComplaintList
-                  complaints={currentCitizenComplaints}
-                  selectedComplaintId={selectedComplaintId}
-                  setSelectedComplaintId={handleSelectComplaint}
-                />
-              )}
+              <ComplaintList
+                complaints={currentCitizenComplaints}
+                selectedComplaintId={selectedComplaintId}
+                setSelectedComplaintId={handleSelectComplaint}
+              />
             </motion.section>
 
             {/* Track: detail */}
