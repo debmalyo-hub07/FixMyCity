@@ -295,6 +295,24 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// --- STATS ROUTE -------------------------------------------------------------
+
+app.get('/api/stats', async (req, res) => {
+  try {
+    const totalComplaints = await Complaint.countDocuments();
+    const resolvedComplaints = await Complaint.countDocuments({ status: 'Resolved' });
+    const registeredCitizens = await User.countDocuments({ role: 'citizen' });
+    res.status(200).json({
+      totalComplaints,
+      resolvedComplaints,
+      registeredCitizens
+    });
+  } catch (e) {
+    console.error('Get stats error:', e);
+    res.status(500).json({ message: 'Failed to retrieve stats.' });
+  }
+});
+
 // --- COMPLAINT ROUTES --------------------------------------------------------
 
 app.get('/api/complaints', async (req, res) => {

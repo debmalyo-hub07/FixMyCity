@@ -81,6 +81,7 @@ function App() {
   const [complaintForm, setComplaintForm] = useState(EMPTY_COMPLAINT_FORM);
   const [selectedComplaintId, setSelectedComplaintId] = useState('');
   const [complaintError, setComplaintError] = useState(null);
+  const [registeredCitizensCount, setRegisteredCitizensCount] = useState(0);
 
   const changeApiUrl = () => {
     const current = localStorage.getItem('fixmycity-api-url') || process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -110,6 +111,8 @@ function App() {
         setReviews(data);
       })
       .catch((err) => console.error('Error fetching reviews:', err));
+
+    refreshStats();
   }, []);
 
   // ── Persist session ────────────────────────────────────────────────────────
@@ -138,20 +141,35 @@ function App() {
   }, [complaints, currentCitizenComplaints, selectedComplaintId, session]);
 
   const stats = useMemo(() => {
-    const citizens = new Set(complaints.map((c) => c.citizenPhone)).size;
     return {
       total: complaints.length,
       active: complaints.filter((c) => c.status !== 'Resolved').length,
       resolved: complaints.filter((c) => c.status === 'Resolved').length,
-      citizens,
+      citizens: registeredCitizensCount || new Set(complaints.map((c) => c.citizenPhone)).size,
     };
-  }, [complaints]);
+  }, [complaints, registeredCitizensCount]);
 
   // ── Auth helpers ───────────────────────────────────────────────────────────
   function resetAuthForms() {
     setAuthMessage('');
     setLoginForm(EMPTY_LOGIN_FORM);
     setRegisterForm(EMPTY_REGISTER_FORM);
+  }
+
+  async function refreshStats() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/stats`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data.registeredCitizens === 'number') {
+          setRegisteredCitizensCount(data.registeredCitizens);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
   }
 
   async function refreshComplaints() {
@@ -161,6 +179,7 @@ function App() {
       if (data.length > 0 && !data.some((c) => c.id === selectedComplaintId)) {
         setSelectedComplaintId(data[0].id);
       }
+      refreshStats();
     } catch (err) {
       console.error('Error refreshing complaints:', err);
     }
@@ -242,6 +261,7 @@ function App() {
       setCitizenMode('login');
       setRegisterForm(EMPTY_REGISTER_FORM);
       setAuthMessage('Registration successful! Please log in.');
+      refreshStats();
     } catch (err) {
       console.error('Register error:', err);
       setAuthMessage('Could not connect to database server.');

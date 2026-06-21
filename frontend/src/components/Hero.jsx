@@ -361,7 +361,7 @@ export default function Hero({
                 <div className="landing-avatar-dot" style={{ backgroundColor: '#1A2438' }} />
               </div>
               <p>
-                <strong>12,400+</strong> citizens reported issues this month
+                <strong>{(stats.citizens || 0).toLocaleString()}</strong> citizens reported issues this month
               </p>
             </motion.div>
           </motion.div>
