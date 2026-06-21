@@ -1025,19 +1025,34 @@ export default function Hero({
                       <div className="auth-input-group">
                         <label>Aadhar Number</label>
                         <div className="auth-input-wrapper">
-                          <FileText size={16} className="auth-input-icon" />
+                           <FileText size={16} className="auth-input-icon" />
+                           <input
+                             required
+                             type="text"
+                             pattern="\d{12}"
+                             title="Aadhar number must be exactly 12 digits."
+                             placeholder="12-digit UID"
+                             value={registerForm.aadhar}
+                             maxLength={12}
+                             onChange={(e) => {
+                               const val = e.target.value.replace(/\D/g, '');
+                               setRegisterForm((prev) => ({ ...prev, aadhar: val }));
+                             }}
+                           />
+                        </div>
+                      </div>
+
+                      <div className="auth-input-group">
+                        <label>Email Address</label>
+                        <div className="auth-input-wrapper">
+                          <Mail size={16} className="auth-input-icon" />
                           <input
-                            required
-                            type="text"
-                            pattern="\d{12}"
-                            title="Aadhar number must be exactly 12 digits."
-                            placeholder="12-digit UID"
-                            value={registerForm.aadhar}
-                            maxLength={12}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/\D/g, '');
-                              setRegisterForm((prev) => ({ ...prev, aadhar: val }));
-                            }}
+                            type="email"
+                            placeholder="you@example.com"
+                            value={registerForm.email}
+                            onChange={(e) =>
+                              setRegisterForm((prev) => ({ ...prev, email: e.target.value }))
+                            }
                           />
                         </div>
                       </div>

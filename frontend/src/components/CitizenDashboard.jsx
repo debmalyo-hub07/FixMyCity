@@ -6,7 +6,6 @@ import {
   FileText,
   PlusCircle,
   BarChart2,
-  LogOut,
 } from 'lucide-react';
 import ComplaintForm from './ComplaintForm';
 import ComplaintList from './ComplaintList';
@@ -106,14 +105,6 @@ export default function CitizenDashboard({
           </div>
         </div>
         
-        <button
-          type="button"
-          className="cz-logout"
-          onClick={logout}
-        >
-          <LogOut size={14} style={{ marginRight: '6px' }} />
-          Sign Out
-        </button>
       </motion.div>
 
       {/* 3-column stats row */}
