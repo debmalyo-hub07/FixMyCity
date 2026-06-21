@@ -8,7 +8,13 @@ import AdminDashboard from './components/AdminDashboard';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const SESSION_KEY = 'fixmycity-session';
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+const getApiBaseUrl = () => {
+  const stored = localStorage.getItem('fixmycity-api-url');
+  if (stored) return stored;
+  return process.env.REACT_APP_API_URL || 'http://localhost:5000';
+};
+const API_BASE_URL = getApiBaseUrl();
 
 export const complaintTypes = [
   'Broken street light problem',
@@ -53,12 +59,21 @@ async function fetchComplaints() {
   return res.json();
 }
 
+async function fetchReviews() {
+  const res = await fetch(`${API_BASE_URL}/api/reviews`, {
+    headers: { 'ngrok-skip-browser-warning': 'true' }
+  });
+  if (!res.ok) throw new Error('Failed to fetch reviews');
+  return res.json();
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 function App() {
   const [portal, setPortal] = useState('citizen');
   const [citizenMode, setCitizenMode] = useState('login');
   const [complaints, setComplaints] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [session, setSession] = useState(readSession);
   const [authMessage, setAuthMessage] = useState('');
   const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
@@ -66,7 +81,21 @@ function App() {
   const [complaintForm, setComplaintForm] = useState(EMPTY_COMPLAINT_FORM);
   const [selectedComplaintId, setSelectedComplaintId] = useState('');
 
-  // ── Bootstrap complaints on mount ──────────────────────────────────────────
+  const changeApiUrl = () => {
+    const current = localStorage.getItem('fixmycity-api-url') || process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const newUrl = prompt("Enter Backend Server API URL (e.g. http://192.168.1.15:5000 or https://your-backend.onrender.com):", current);
+    if (newUrl !== null) {
+      const trimmed = newUrl.trim();
+      if (trimmed === '') {
+        localStorage.removeItem('fixmycity-api-url');
+      } else {
+        localStorage.setItem('fixmycity-api-url', trimmed.replace(/\/$/, "")); // Trim trailing slash
+      }
+      window.location.reload();
+    }
+  };
+
+  // ── Bootstrap complaints and reviews on mount ──────────────────────────────
   useEffect(() => {
     fetchComplaints()
       .then((data) => {
@@ -74,6 +103,12 @@ function App() {
         if (data.length > 0) setSelectedComplaintId(data[0].id);
       })
       .catch((err) => console.error('Error fetching complaints:', err));
+
+    fetchReviews()
+      .then((data) => {
+        setReviews(data);
+      })
+      .catch((err) => console.error('Error fetching reviews:', err));
   }, []);
 
   // ── Persist session ────────────────────────────────────────────────────────
@@ -175,6 +210,11 @@ function App() {
   async function handleCitizenRegister(event) {
     event.preventDefault();
     setAuthMessage('');
+
+    if (!/^\d{12}$/.test(registerForm.aadhar.trim())) {
+      setAuthMessage('Aadhar number must be exactly 12 digits.');
+      return;
+    }
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -363,14 +403,47 @@ function App() {
 
       setComplaints((prev) => {
         const remaining = prev.filter((c) => c.id !== complaintId);
-        if (selectedComplaintId === complaintId) {
-          setSelectedComplaintId(remaining[0]?.id ?? '');
-        }
+        if (remaining.length > 0) setSelectedComplaintId(remaining[0].id);
+        else setSelectedComplaintId('');
         return remaining;
       });
     } catch (err) {
       console.error('Delete complaint error:', err);
       alert('Could not connect to database server.');
+    }
+  }
+
+  async function handleReviewSubmit(reviewData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/reviews`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Failed to submit review.');
+        return false;
+      }
+
+      const newReview = await res.json();
+      setReviews((prev) => [newReview, ...prev]);
+
+      // Update the complaint locally to be reviewed
+      if (reviewData.complaintId) {
+        setComplaints((prev) =>
+          prev.map((c) => (c.id === reviewData.complaintId ? { ...c, isReviewed: true } : c))
+        );
+      }
+      return true;
+    } catch (err) {
+      console.error('Submit review error:', err);
+      alert('Could not connect to database server.');
+      return false;
     }
   }
 
@@ -398,6 +471,7 @@ function App() {
             complaintTypes={complaintTypes}
             handleComplaintImages={handleComplaintImages}
             handleComplaintSubmit={handleComplaintSubmit}
+            handleReviewSubmit={handleReviewSubmit}
           />
         ) : session?.role === 'admin' ? (
           <AdminDashboard
@@ -428,6 +502,8 @@ function App() {
             handleAdminLogin={handleAdminLogin}
             resetAuthForms={resetAuthForms}
             complaints={complaints}
+            changeApiUrl={changeApiUrl}
+            reviews={reviews}
           />
         )}
       </main>

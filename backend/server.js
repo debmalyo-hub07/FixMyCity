@@ -10,6 +10,7 @@ require('dotenv').config();
 const User = require('./models/User');
 const Admin = require('./models/Admin');
 const Complaint = require('./models/Complaint');
+const Review = require('./models/Review');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -268,6 +269,38 @@ async function seedDatabase() {
       await Complaint.insertMany(initialComplaints);
       console.log('Complaints seeded successfully.');
     }
+
+    // 4. Seed Reviews if empty
+    const reviewCount = await Review.countDocuments();
+    if (reviewCount === 0) {
+      console.log('Seeding initial website reviews...');
+      const initialReviews = [
+        {
+          name: 'Maria Chen',
+          role: 'Resident, Portland',
+          quote: 'Reported a pothole on my street Monday morning. By Thursday it was filled. I was genuinely shocked at how fast it worked.',
+          avatar: 'MC',
+          rating: 5
+        },
+        {
+          name: 'David Okafor',
+          role: 'Community Organizer, Austin',
+          quote: 'FixMyCity turned our neighborhood association into a real force. We documented 40 broken streetlights in one evening. All fixed within a month.',
+          avatar: 'DO',
+          rating: 5
+        },
+        {
+          name: 'Rosa Medina',
+          role: 'City Council Aide, Denver',
+          quote: 'From the government side — the prioritized reports make our job so much easier. We see what matters most to residents instantly.',
+          avatar: 'RM',
+          rating: 5
+        }
+      ];
+
+      await Review.insertMany(initialReviews);
+      console.log('Reviews seeded successfully.');
+    }
   } catch (error) {
     console.error('Error seeding database:', error);
   }
@@ -282,6 +315,11 @@ app.post('/api/auth/register', async (req, res) => {
 
     if (!name || !phone || !aadhar || !password) {
       return res.status(400).json({ message: 'All registration fields are required.' });
+    }
+
+    // Validate Aadhar number length (exactly 12 digits)
+    if (!/^\d{12}$/.test(aadhar)) {
+      return res.status(400).json({ message: 'Aadhar number must be exactly 12 digits.' });
     }
 
     // Check if phone already exists
@@ -615,6 +653,59 @@ app.delete('/api/complaints/:id', async (req, res) => {
   } catch (error) {
     console.error('Delete complaint error:', error);
     res.status(500).json({ message: 'Failed to delete complaint.' });
+  }
+});
+
+// --- WEBSITE REVIEW ROUTES ---
+
+// 1. Submit a Review
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { name, role, quote, rating, complaintId } = req.body;
+
+    if (!name || !role || !quote || !rating) {
+      return res.status(400).json({ message: 'All review fields (name, role, quote, rating) are required.' });
+    }
+
+    // Generate initials from name
+    const initials = name
+      .split(' ')
+      .map(w => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'U';
+
+    const newReview = new Review({
+      name,
+      role,
+      quote,
+      avatar: initials,
+      rating: Number(rating),
+      complaintId: complaintId || ''
+    });
+
+    await newReview.save();
+
+    // If linked to a complaint, mark the complaint as reviewed
+    if (complaintId) {
+      await Complaint.findOneAndUpdate({ id: complaintId }, { isReviewed: true });
+    }
+
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error('Submit review error:', error);
+    res.status(500).json({ message: 'Failed to submit review.' });
+  }
+});
+
+// 2. Get all Reviews
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error('Get reviews error:', error);
+    res.status(500).json({ message: 'Failed to retrieve reviews.' });
   }
 });
 

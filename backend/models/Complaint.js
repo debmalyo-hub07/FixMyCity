@@ -101,6 +101,10 @@ const ComplaintSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isReviewed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model('Complaint', ComplaintSchema);

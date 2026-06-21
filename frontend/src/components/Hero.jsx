@@ -19,7 +19,8 @@ import {
   Key,
   User,
   Shield,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react';
 
 export default function Hero({
@@ -37,7 +38,9 @@ export default function Hero({
   handleCitizenRegister,
   handleAdminLogin,
   resetAuthForms,
-  complaints = []
+  complaints = [],
+  changeApiUrl,
+  reviews = []
 }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -176,24 +179,27 @@ export default function Hero({
       });
 
   // Testimonials list
-  const testimonials = [
+  const testimonials = reviews.length > 0 ? reviews : [
     {
       name: 'Maria Chen',
       role: 'Resident, Portland',
       quote: 'Reported a pothole on my street Monday morning. By Thursday it was filled. I was genuinely shocked at how fast it worked.',
-      avatar: 'MC'
+      avatar: 'MC',
+      rating: 5
     },
     {
       name: 'David Okafor',
       role: 'Community Organizer, Austin',
       quote: 'FixMyCity turned our neighborhood association into a real force. We documented 40 broken streetlights in one evening. All fixed within a month.',
-      avatar: 'DO'
+      avatar: 'DO',
+      rating: 5
     },
     {
       name: 'Rosa Medina',
       role: 'City Council Aide, Denver',
       quote: 'From the government side — the prioritized reports make our job so much easier. We see what matters most to residents instantly.',
-      avatar: 'RM'
+      avatar: 'RM',
+      rating: 5
     }
   ];
 
@@ -620,7 +626,14 @@ export default function Hero({
                 <div>
                   <div className="landing-stars">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} />
+                      <Star
+                        key={i}
+                        size={14}
+                        style={{
+                          fill: i < (test.rating || 5) ? 'var(--yellow-accent, #F0E840)' : 'none',
+                          color: i < (test.rating || 5) ? 'var(--yellow-accent, #F0E840)' : 'rgba(255, 255, 255, 0.25)'
+                        }}
+                      />
                     ))}
                   </div>
                   <blockquote className="landing-quote">
@@ -749,6 +762,32 @@ export default function Hero({
               transition={{ type: 'spring', duration: 0.4 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {changeApiUrl && (
+                <button 
+                  type="button" 
+                  className="auth-modal-settings-btn"
+                  onClick={changeApiUrl}
+                  title="Configure Server URL"
+                  style={{
+                    position: 'absolute',
+                    top: '24px',
+                    left: '24px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'rgba(26, 36, 56, 0.4)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'color 0.25s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#F4AE52'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(26, 36, 56, 0.4)'}
+                >
+                  <Settings size={20} />
+                </button>
+              )}
               <button 
                 type="button" 
                 className="auth-modal-close"
@@ -889,11 +928,15 @@ export default function Hero({
                           <input
                             required
                             type="text"
+                            pattern="\d{12}"
+                            title="Aadhar number must be exactly 12 digits."
                             placeholder="12-digit UID"
                             value={registerForm.aadhar}
-                            onChange={(e) =>
-                              setRegisterForm((prev) => ({ ...prev, aadhar: e.target.value }))
-                            }
+                            maxLength={12}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/\D/g, '');
+                              setRegisterForm((prev) => ({ ...prev, aadhar: val }));
+                            }}
                           />
                         </div>
                       </div>
@@ -962,8 +1005,28 @@ export default function Hero({
               )}
 
               {authMessage && (
-                <div className="auth-modal-error font-mono">
-                  {authMessage}
+                <div className="auth-modal-error font-mono" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+                  <span>{authMessage}</span>
+                  {changeApiUrl && authMessage.toLowerCase().includes('connect') && (
+                    <button 
+                      type="button"
+                      onClick={changeApiUrl}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid currentColor',
+                        color: 'inherit',
+                        padding: '4px 8px',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        marginTop: '4px',
+                        textTransform: 'uppercase',
+                        fontFamily: 'inherit',
+                        letterSpacing: '0.05em'
+                      }}
+                    >
+                      Configure Server URL
+                    </button>
+                  )}
                 </div>
               )}
             </motion.div>

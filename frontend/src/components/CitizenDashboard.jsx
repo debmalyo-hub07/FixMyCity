@@ -24,6 +24,7 @@ export default function CitizenDashboard({
   complaintTypes,
   handleComplaintImages,
   handleComplaintSubmit,
+  handleReviewSubmit,
 }) {
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'track'
   const [mobileTrackView, setMobileTrackView] = useState('list'); // 'list' or 'detail'
@@ -227,6 +228,8 @@ export default function CitizenDashboard({
                 showFullDetails={true}
                 onBackToList={() => setMobileTrackView('list')}
                 onImageClick={setMaximizedImage}
+                handleReviewSubmit={handleReviewSubmit}
+                session={session}
               />
             </motion.section>
           </>
