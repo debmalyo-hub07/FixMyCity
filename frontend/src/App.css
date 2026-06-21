@@ -4541,13 +4541,16 @@ textarea:focus-visible {
 }
 
 .auth-modal-card {
-  background-color: var(--primary-navy);
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(26, 36, 56, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
   padding: 36px;
   width: 100%;
   max-width: 440px;
   position: relative;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   animation: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   /* Redefine light theme variables locally so modal text remains white/light */
@@ -4555,7 +4558,7 @@ textarea:focus-visible {
   --white-fade-70: rgba(255, 255, 255, 0.7);
   --white-fade-50: rgba(255, 255, 255, 0.5);
   --white-fade-10: rgba(255, 255, 255, 0.1);
-  --navy-muted: #243050;
+  --navy-muted: rgba(255, 255, 255, 0.05);
 }
 
 @keyframes modal-slide-up {
@@ -4727,6 +4730,7 @@ textarea:focus-visible {
   color: var(--primary-fg);
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  border-radius: 6px;
 }
 
 .auth-input-wrapper input:focus {
