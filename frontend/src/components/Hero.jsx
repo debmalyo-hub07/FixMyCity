@@ -747,9 +747,11 @@ export default function Hero({
               <h4>Contact Us</h4>
               <div className="landing-footer-contact-icons">
                 <a
-                  href="mailto:rounakthakur49@gmail.com"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=rounakthakur49@gmail.com"
                   className="landing-contact-icon-btn"
                   title="Email Us"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Mail size={20} />
                 </a>
