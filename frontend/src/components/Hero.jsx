@@ -750,8 +750,6 @@ export default function Hero({
                   href="mailto:rounakthakur49@gmail.com"
                   className="landing-contact-icon-btn"
                   title="Email Us"
-                  target="_blank"
-                  rel="noopener noreferrer"
                 >
                   <Mail size={20} />
                 </a>
