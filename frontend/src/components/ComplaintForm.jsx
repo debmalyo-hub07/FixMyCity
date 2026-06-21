@@ -25,6 +25,8 @@ export default function ComplaintForm({
   complaintTypes,
   handleComplaintImages,
   handleComplaintSubmit,
+  complaintError,
+  setComplaintError,
 }) {
   const fileInputRef = useRef(null);
 
@@ -198,6 +200,56 @@ export default function ComplaintForm({
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {complaintError && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            style={{
+              marginTop: '20px',
+              padding: '14px 16px',
+              borderRadius: '10px',
+              background: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              color: '#b91c1c',
+              fontSize: '13px',
+              lineHeight: 1.5,
+            }}
+          >
+            <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>
+              {complaintError.kind === 'mismatch'
+                ? 'Image does not match selected category'
+                : 'Submission failed'}
+            </strong>
+            <div>{complaintError.message}</div>
+            {complaintError.kind === 'mismatch' && (
+              <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.85 }}>
+                Detected: <strong>{complaintError.detected}</strong>
+                {' · '}Declared: <strong>{complaintError.declared}</strong>
+                {' · '}Confidence: <strong>{Math.round((complaintError.confidence || 0) * 100)}%</strong>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setComplaintError(null)}
+              style={{
+                marginTop: '10px',
+                padding: '4px 10px',
+                fontSize: '11px',
+                borderRadius: '6px',
+                background: 'transparent',
+                border: '1px solid rgba(185, 28, 28, 0.4)',
+                color: '#b91c1c',
+                cursor: 'pointer',
+              }}
+            >
+              Dismiss
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Submit Button */}
       <button type="submit" className="cf-submit-btn-new">

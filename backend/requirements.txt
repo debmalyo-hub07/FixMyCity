@@ -1,0 +1,8 @@
+﻿tensorflow==2.15.0
+kagglehub==0.2.5
+pillow==10.3.0
+numpy==1.26.4
+matplotlib==3.8.4
+requests==2.32.3
+tqdm==4.66.4
+duckduckgo-search==5.3.1
