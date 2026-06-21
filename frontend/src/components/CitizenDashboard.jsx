@@ -165,7 +165,7 @@ export default function CitizenDashboard({
       </div>
 
       {/* Work area */}
-      <div className={`cz-work-area ${activeTab === 'file' ? 'view-file' : 'view-track'}`}>
+      <div className={`cz-work ${activeTab === 'file' ? 'view-file' : 'view-track'}`}>
         {activeTab === 'track' && currentCitizenComplaints.length === 0 ? (
           <motion.div className="cz-track-empty-state" variants={cardVariants}>
             <div className="cz-empty-icon-box">

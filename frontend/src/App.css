@@ -1185,6 +1185,34 @@ textarea {
   margin: 0;
 }
 
+.empty-state-modern-new {
+  padding: 40px;
+  text-align: center;
+  background: transparent;
+  border: 1px dashed rgba(26, 36, 56, 0.15);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.empty-state-modern-new h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #1A2438;
+  margin: 0;
+}
+
+.empty-state-modern-new p {
+  font-size: 0.9rem;
+  color: rgba(26, 36, 56, 0.5);
+  margin: 0;
+}
+
 /* Status Badges */
 .status-badge {
   font-size: 0.72rem;
@@ -6213,6 +6241,12 @@ textarea:focus-visible {
 
 .mobile-detail-back-btn-new:hover {
   background-color: rgba(232, 93, 38, 0.05);
+}
+
+@media (min-width: 921px) {
+  .mobile-detail-back-btn-new {
+    display: none !important;
+  }
 }
 
 .detail-header-title-wrapper-new {
