@@ -25,6 +25,8 @@ export default function CitizenDashboard({
   handleComplaintImages,
   handleComplaintSubmit,
   handleReviewSubmit,
+  complaintError,
+  setComplaintError,
 }) {
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'track'
   const [mobileTrackView, setMobileTrackView] = useState('list'); // 'list' or 'detail'
@@ -63,10 +65,13 @@ export default function CitizenDashboard({
     setMobileTrackView('detail');
   };
 
-  const handleFormSubmitWrapped = (e) => {
-    handleComplaintSubmit(e);
-    setActiveTab('track');
-    setMobileTrackView('detail');
+  const handleFormSubmitWrapped = async (e) => {
+    e.preventDefault();
+    const ok = await handleComplaintSubmit(e);
+    if (ok) {
+      setActiveTab('track');
+      setMobileTrackView('detail');
+    }
   };
 
   const containerVariants = {
@@ -189,12 +194,14 @@ export default function CitizenDashboard({
                 <h3>File a New Complaint</h3>
                 <p>Describe the issue and give the exact location to speed up routing.</p>
               </div>
-              <ComplaintForm
+               <ComplaintForm
                 complaintForm={complaintForm}
                 setComplaintForm={setComplaintForm}
                 complaintTypes={complaintTypes}
                 handleComplaintImages={handleComplaintImages}
                 handleComplaintSubmit={handleFormSubmitWrapped}
+                complaintError={complaintError}
+                setComplaintError={setComplaintError}
               />
             </motion.section>
 

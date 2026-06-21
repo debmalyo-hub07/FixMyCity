@@ -80,6 +80,7 @@ function App() {
   const [loginForm, setLoginForm] = useState(EMPTY_LOGIN_FORM);
   const [complaintForm, setComplaintForm] = useState(EMPTY_COMPLAINT_FORM);
   const [selectedComplaintId, setSelectedComplaintId] = useState('');
+  const [complaintError, setComplaintError] = useState(null);
 
   const changeApiUrl = () => {
     const current = localStorage.getItem('fixmycity-api-url') || process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -314,14 +315,15 @@ function App() {
     });
   }
 
-  async function handleComplaintSubmit(event) {
+async function handleComplaintSubmit(event) {
     event.preventDefault();
-    if (session?.role !== 'citizen') return;
+    if (session?.role !== 'citizen') return false;
+    setComplaintError(null);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/complaints`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
@@ -339,17 +341,38 @@ function App() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.message || 'Failed to submit complaint.');
-        return;
+        if (data.reason === 'image_category_mismatch') {
+          setComplaintError({
+            kind: 'mismatch',
+            message: data.message,
+            detected: data.detected,
+            declared: data.declared,
+            confidence: data.confidence,
+            probs: data.probs,
+            block_reason: data.block_reason,
+          });
+        } else {
+          setComplaintError({
+            kind: 'generic',
+            message: data.message || 'Failed to submit complaint.',
+          });
+        }
+        return false;
       }
 
       const newComplaint = await res.json();
       setComplaints((prev) => [newComplaint, ...prev]);
       setSelectedComplaintId(newComplaint.id);
       setComplaintForm(EMPTY_COMPLAINT_FORM);
+      setComplaintError(null);
+      return true;
     } catch (err) {
       console.error('Submit complaint error:', err);
-      alert('Could not connect to database server.');
+      setComplaintError({
+        kind: 'generic',
+        message: 'Could not connect to server.',
+      });
+      return false;
     }
   }
 
@@ -472,6 +495,8 @@ function App() {
             handleComplaintImages={handleComplaintImages}
             handleComplaintSubmit={handleComplaintSubmit}
             handleReviewSubmit={handleReviewSubmit}
+            complaintError={complaintError}
+            setComplaintError={setComplaintError}
           />
         ) : session?.role === 'admin' ? (
           <AdminDashboard
