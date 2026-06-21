@@ -4939,7 +4939,8 @@ textarea:focus-visible {
 
 /* ── Citizen User Dropdown ─────────────────────────────────────────────────── */
 
-.citizen-user-dropdown {
+.citizen-user-dropdown,
+.admin-user-dropdown-container {
   position: relative;
   display: flex;
   align-items: center;
@@ -4992,11 +4993,13 @@ textarea:focus-visible {
 }
 
 .citizen-dropdown-menu-content {
-  background: #151e2f;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(21, 30, 47, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 20px 60px rgba(0, 0, 0, 0.45),
     0 0 0 1px rgba(255, 255, 255, 0.04) inset;
   overflow: hidden;
 }
