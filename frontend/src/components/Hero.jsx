@@ -20,7 +20,9 @@ import {
   User,
   Shield,
   FileText,
-  Settings
+  Settings,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function Hero({
@@ -45,6 +47,9 @@ export default function Hero({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [feedFilter, setFeedFilter] = useState('All');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
   const openAuthModal = (targetPortal, mode = 'login') => {
     setPortal(targetPortal);
@@ -52,6 +57,9 @@ export default function Hero({
       setCitizenMode(mode);
     }
     resetAuthForms();
+    setShowLoginPassword(false);
+    setShowRegisterPassword(false);
+    setShowAdminPassword(false);
     setIsAuthModalOpen(true);
     setMenuOpen(false);
   };
@@ -870,13 +878,22 @@ export default function Hero({
                           <Key size={16} className="auth-input-icon" />
                           <input
                             required
-                            type="password"
+                            type={showLoginPassword ? "text" : "password"}
                             placeholder="••••••••"
                             value={loginForm.password}
                             onChange={(e) =>
                               setLoginForm((prev) => ({ ...prev, password: e.target.value }))
                             }
+                            style={{ paddingRight: '40px' }}
                           />
+                          <button
+                            type="button"
+                            className="auth-password-toggle"
+                            onClick={() => setShowLoginPassword(!showLoginPassword)}
+                            aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                          >
+                            {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
                         </div>
                       </div>
 
@@ -947,13 +964,22 @@ export default function Hero({
                           <Key size={16} className="auth-input-icon" />
                           <input
                             required
-                            type="password"
+                            type={showRegisterPassword ? "text" : "password"}
                             placeholder="Create password"
                             value={registerForm.password}
                             onChange={(e) =>
                               setRegisterForm((prev) => ({ ...prev, password: e.target.value }))
                             }
+                            style={{ paddingRight: '40px' }}
                           />
+                          <button
+                            type="button"
+                            className="auth-password-toggle"
+                            onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                            aria-label={showRegisterPassword ? "Hide password" : "Show password"}
+                          >
+                            {showRegisterPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
                         </div>
                       </div>
 
@@ -990,13 +1016,22 @@ export default function Hero({
                       <Key size={16} className="auth-input-icon" />
                       <input
                         required
-                        type="password"
+                        type={showAdminPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={loginForm.password}
                         onChange={(e) =>
                           setLoginForm((prev) => ({ ...prev, password: e.target.value }))
                         }
+                        style={{ paddingRight: '40px' }}
                       />
+                      <button
+                        type="button"
+                        className="auth-password-toggle"
+                        onClick={() => setShowAdminPassword(!showAdminPassword)}
+                        aria-label={showAdminPassword ? "Hide password" : "Show password"}
+                      >
+                        {showAdminPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
                     </div>
                   </div>
 
