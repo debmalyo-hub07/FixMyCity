@@ -4530,9 +4530,9 @@ textarea:focus-visible {
 .auth-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(10, 15, 26, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(10, 15, 26, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 1100;
   display: flex;
   justify-content: center;
@@ -4541,10 +4541,10 @@ textarea:focus-visible {
 }
 
 .auth-modal-card {
-  background-color: rgba(26, 36, 56, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(21, 30, 47, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
   padding: 36px;
   width: 100%;
@@ -4587,6 +4587,7 @@ textarea:focus-visible {
   background-color: var(--navy-muted);
   padding: 4px;
   margin-bottom: 24px;
+  border-radius: 8px;
 }
 
 .auth-modal-tab {
@@ -4605,12 +4606,13 @@ textarea:focus-visible {
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
+  border-radius: 6px;
 }
 
 .auth-modal-tab.active {
-  background-color: var(--primary-navy);
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-fg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Mode toggles inside Citizen */
