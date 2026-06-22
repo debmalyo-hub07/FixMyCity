@@ -1,168 +1,73 @@
-﻿"""Download datasets for civic complaint image classifier."""
-import argparse
-import hashlib
-import io
+import os
 import shutil
-import sys
 from pathlib import Path
+from kaggle.api.kaggle_api_extended import KaggleApi
 
-from PIL import Image
-
-ROOT = Path(__file__).resolve().parent
-DATA_DIR = ROOT / "my_dataset"
-CATEGORIES = ["potholes", "drainage", "streetlight", "others"]
-
-KAGGLE_SLUGS = {
-    "potholes": [
-        "atulyakumar98/pothole-detection-dataset",
-        "chitholian/annotated-potholes-dataset",
-    ],
-    "drainage": [
-        "saurabhshahane/road-classification-images",
-        "jonathannield/cctv-human-pose-estimation-dataset",
-        "alincijov/flood-area-segmentation",
-    ],
-    "streetlight": [
-        "akshat0007/streetlightdetection",
-        "andrewmvd/road-sign-detection",
-    ],
-    "others": [
-        "mostafaabla/garbage-classification",
-        "asdasdasasdas/garbage-classification",
-    ],
+# Configuration
+DATASETS = {
+    "potholes": "chitholian/annotated-potholes-dataset",
+    "drainage": "saurabhshahane/roadway-flooding-image-dataset", 
+    "streetlight": "samuelayman/light-poles", 
+    "others": "asdasdasasdas/garbage-classification"
 }
 
-BING_QUERIES = {
-    "potholes": ["pothole road damage", "asphalt pothole closeup"],
-    "drainage": [
-        "clogged storm drain street india",
-        "overflowing manhole street",
-        "blocked road drainage water",
-        "street flood drain blocked",
-        "open sewer drain road",
-    ],
-    "streetlight": [
-        "broken street light pole damaged",
-        "bent street lamp post",
-        "street light fallen pole",
-        "rusty street light post",
-        "vandalized street lamp",
-    ],
-    "others": [
-        "broken water pipe leaking road",
-        "fallen tree blocking street",
-        "garbage pile road india",
-        "damaged sidewalk crack",
-    ],
-}
+MAX_IMAGES_PER_CATEGORY = 1000
+DATA_DIR = Path("my_dataset")
 
+def setup_directories():
+    if DATA_DIR.exists():
+        print(f"Backing up existing dataset to {DATA_DIR.name}_backup...")
+        backup_dir = Path(f"{DATA_DIR.name}_backup")
+        if backup_dir.exists():
+            shutil.rmtree(backup_dir)
+        shutil.move(str(DATA_DIR), str(backup_dir))
+    
+    for category in DATASETS.keys():
+        (DATA_DIR / category).mkdir(parents=True, exist_ok=True)
 
-def ensure_dirs():
-    for c in CATEGORIES:
-        (DATA_DIR / c).mkdir(parents=True, exist_ok=True)
-
-
-def import_image(src_path, dest_dir, prefix):
-    try:
-        img = Image.open(src_path).convert("RGB")
-        if min(img.size) < 96:
-            return False
-        h = hashlib.md5(Path(src_path).read_bytes()).hexdigest()[:12]
-        out = dest_dir / f"{prefix}_{h}.jpg"
-        if out.exists():
-            return False
-        img.save(out, "JPEG", quality=88)
-        return True
-    except Exception:
-        return False
-
-
-def fetch_via_kagglehub(category, target):
-    slugs = KAGGLE_SLUGS.get(category, [])
-    if not slugs:
-        return 0
-    try:
-        import kagglehub
-    except Exception as e:
-        print(f"  kagglehub unavailable: {e}", file=sys.stderr)
-        return 0
-    dest = DATA_DIR / category
-    total = len(list(dest.glob("*.jpg")))
-    for slug in slugs:
-        if total >= target:
-            break
+def download_and_extract():
+    api = KaggleApi()
+    api.authenticate()
+    
+    for category, dataset_id in DATASETS.items():
+        print(f"\n--- Processing {category} ({dataset_id}) ---")
+        temp_dir = Path("temp_kaggle") / category
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        
+        print(f"Downloading {dataset_id}...")
         try:
-            print(f"[{category}] kagglehub pull: {slug}")
-            path = kagglehub.dataset_download(slug)
-            src = Path(path)
-            copied = 0
-            for p in src.rglob("*"):
-                if total >= target:
+            api.dataset_download_files(dataset_id, path=str(temp_dir), unzip=True)
+        except Exception as e:
+            print(f"Failed to download {dataset_id}: {e}")
+            print("Will attempt search for alternatives...")
+            # Search alternative
+            search_results = api.dataset_list(search=category)
+            for res in search_results:
+                if res.size and res.size > 1000000: # at least 1MB
+                    print(f"Found alternative: {res.ref}")
+                    api.dataset_download_files(res.ref, path=str(temp_dir), unzip=True)
                     break
-                if p.suffix.lower() in {".jpg", ".jpeg", ".png"}:
-                    if import_image(p, dest, prefix="kag"):
-                        copied += 1
-                        total += 1
-            print(f"  copied {copied} from {slug} (total {total})")
-        except Exception as e:
-            print(f"  kagglehub fail {slug}: {e}", file=sys.stderr)
-    return total
-
-
-def fetch_via_bing(category, target):
-    dest = DATA_DIR / category
-    have = len(list(dest.glob("*.jpg")))
-    if have >= target:
-        print(f"[{category}] already {have} >= {target}; skip Bing")
-        return
-    try:
-        from icrawler.builtin import BingImageCrawler
-    except Exception as e:
-        print(f"  icrawler unavailable: {e}", file=sys.stderr)
-        return
-    queries = BING_QUERIES[category]
-    per_q = max(80, (target - have) // max(1, len(queries)) + 50)
-    for q in queries:
-        if len(list(dest.glob("*.jpg"))) >= target:
-            break
-        tmp = DATA_DIR / f"_tmp_{category}_{abs(hash(q)) % 10000}"
-        tmp.mkdir(exist_ok=True)
-        print(f"[{category}] Bing: '{q}' (target {per_q})")
-        try:
-            crawler = BingImageCrawler(storage={"root_dir": str(tmp)}, log_level=40)
-            crawler.crawl(keyword=q, max_num=per_q, file_idx_offset=0)
-            imported = 0
-            for p in tmp.iterdir():
-                if import_image(p, dest, prefix=f"bing_{abs(hash(q)) % 10000}"):
-                    imported += 1
-            print(f"  imported {imported}")
-        except Exception as e:
-            print(f"  Bing fail '{q}': {e}", file=sys.stderr)
-        finally:
-            shutil.rmtree(tmp, ignore_errors=True)
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--category", choices=CATEGORIES + ["all"], default="all")
-    ap.add_argument("--target", type=int, default=400)
-    ap.add_argument("--skip-kaggle", action="store_true")
-    ap.add_argument("--skip-bing", action="store_true")
-    args = ap.parse_args()
-
-    ensure_dirs()
-    cats = CATEGORIES if args.category == "all" else [args.category]
-    for c in cats:
-        if not args.skip_kaggle:
-            fetch_via_kagglehub(c, args.target)
-        if not args.skip_bing:
-            fetch_via_bing(c, args.target)
-
-    print("\n=== Final counts ===")
-    for c in CATEGORIES:
-        n = len(list((DATA_DIR / c).glob("*.jpg")))
-        print(f"  {c}: {n}")
-
+        
+        # Move images to final directory
+        print(f"Extracting and copying up to {MAX_IMAGES_PER_CATEGORY} images...")
+        count = 0
+        for ext in ["*.jpg", "*.jpeg", "*.png"]:
+            for img_path in temp_dir.rglob(ext):
+                if count >= MAX_IMAGES_PER_CATEGORY:
+                    break
+                
+                # Check file size to avoid corrupt/tiny images
+                if img_path.stat().st_size < 5000:
+                    continue
+                    
+                dest_path = DATA_DIR / category / f"kg_{category}_{count:04d}{img_path.suffix.lower()}"
+                shutil.copy2(img_path, dest_path)
+                count += 1
+                
+        print(f"Copied {count} images for {category}.")
+        shutil.rmtree(temp_dir)
 
 if __name__ == "__main__":
-    main()
+    setup_directories()
+    download_and_extract()
+    print("\nDataset migration complete!")

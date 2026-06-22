@@ -1,0 +1,37 @@
+{
+  // Disable Pyrefly — it ignores pyrightconfig.json and uses wrong system Python (C:\Python314)
+  // Pylance (ms-python.vscode-pylance) handles Python analysis correctly with the .venv
+  "pyrefly.enable": false,
+  "python.languageServer": "Pylance",
+
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/backend/.venv/Lib/site-packages"
+  ],
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.autoImportCompletions": true,
+  // Ignore backend Python ML scripts — they run fine but TF has no type stubs
+  "python.analysis.ignore": [
+    "backend/*.py"
+  ],
+  "python.analysis.exclude": [
+    "**/node_modules",
+    "**/.venv/**",
+    "**/my_dataset/**",
+    "**/my_dataset_excess/**",
+    "**/civic_saved_model/**"
+  ],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/my_dataset_excess": true,
+    "**/civic_saved_model": true
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python"
+  }
+}

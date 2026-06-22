@@ -12,6 +12,7 @@
     "install:all": "npm --prefix frontend install && npm --prefix backend install"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "concurrently": "^9.1.0"
   }
 }
