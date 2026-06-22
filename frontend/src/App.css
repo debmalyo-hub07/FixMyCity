@@ -1185,6 +1185,34 @@ textarea {
   margin: 0;
 }
 
+.empty-state-modern-new {
+  padding: 40px;
+  text-align: center;
+  background: transparent;
+  border: 1px dashed rgba(26, 36, 56, 0.15);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.empty-state-modern-new h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #1A2438;
+  margin: 0;
+}
+
+.empty-state-modern-new p {
+  font-size: 0.9rem;
+  color: rgba(26, 36, 56, 0.5);
+  margin: 0;
+}
+
 /* Status Badges */
 .status-badge {
   font-size: 0.72rem;
@@ -4530,9 +4558,9 @@ textarea:focus-visible {
 .auth-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(10, 15, 26, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(10, 15, 26, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 1100;
   display: flex;
   justify-content: center;
@@ -4541,13 +4569,16 @@ textarea:focus-visible {
 }
 
 .auth-modal-card {
-  background-color: var(--primary-navy);
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(21, 30, 47, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
   padding: 36px;
   width: 100%;
   max-width: 440px;
   position: relative;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   animation: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   /* Redefine light theme variables locally so modal text remains white/light */
@@ -4555,7 +4586,7 @@ textarea:focus-visible {
   --white-fade-70: rgba(255, 255, 255, 0.7);
   --white-fade-50: rgba(255, 255, 255, 0.5);
   --white-fade-10: rgba(255, 255, 255, 0.1);
-  --navy-muted: #243050;
+  --navy-muted: rgba(255, 255, 255, 0.05);
 }
 
 @keyframes modal-slide-up {
@@ -4584,6 +4615,7 @@ textarea:focus-visible {
   background-color: var(--navy-muted);
   padding: 4px;
   margin-bottom: 24px;
+  border-radius: 8px;
 }
 
 .auth-modal-tab {
@@ -4602,12 +4634,13 @@ textarea:focus-visible {
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
+  border-radius: 6px;
 }
 
 .auth-modal-tab.active {
-  background-color: var(--primary-navy);
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-fg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Mode toggles inside Citizen */
@@ -4727,6 +4760,7 @@ textarea:focus-visible {
   color: var(--primary-fg);
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  border-radius: 6px;
 }
 
 .auth-input-wrapper input:focus {
@@ -4935,6 +4969,414 @@ textarea:focus-visible {
 .header-logout-btn:hover svg {
   transform: translateX(3px) scale(1.1);
   color: #ef4444;
+}
+
+/* ── Citizen User Dropdown ─────────────────────────────────────────────────── */
+
+.citizen-user-dropdown,
+.admin-user-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.citizen-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.citizen-user-trigger:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dropdown-chevron {
+  transition: transform 0.25s ease !important;
+}
+
+/* Hover triggers to show dropdown and rotate chevron */
+.citizen-user-dropdown:hover .citizen-dropdown-menu,
+.admin-user-dropdown-container:hover .citizen-dropdown-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.citizen-user-dropdown:hover .dropdown-chevron,
+.admin-user-dropdown-container:hover .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.citizen-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  padding-top: 12px;
+  right: 0;
+  width: 240px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 0.2s cubic-bezier(0.2, 0.8, 0.4, 1), transform 0.2s cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+
+.citizen-dropdown-menu-content {
+  background: rgba(21, 30, 47, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  overflow: hidden;
+}
+
+/* Profile top section */
+.citizen-dropdown-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.citizen-dropdown-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #F0E840, #e5d400);
+  color: #1A2438;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(240, 232, 64, 0.25);
+}
+
+.citizen-dropdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.citizen-dropdown-name {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #F4EFE4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.citizen-dropdown-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 20px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Divider */
+.citizen-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0;
+}
+
+/* Info rows */
+.citizen-dropdown-rows {
+  padding: 10px 0;
+}
+
+.citizen-dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  transition: background 0.15s ease;
+}
+
+.citizen-dropdown-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.citizen-dropdown-row-icon {
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.citizen-dropdown-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.citizen-dropdown-row-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.citizen-dropdown-row-value {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #F4EFE4;
+}
+
+/* Action buttons */
+.citizen-dropdown-actions {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.citizen-dropdown-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+
+.citizen-dropdown-action-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #F4EFE4;
+}
+
+.citizen-dropdown-signout:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+
+/* Profile Edit Modal styles */
+.profile-edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 15, 30, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+.profile-edit-modal-container {
+  width: 100%;
+  max-width: 440px;
+  background: #121824;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.profile-edit-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-edit-modal-header h3 {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #F4EFE4;
+}
+
+.profile-edit-modal-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-edit-modal-close:hover {
+  color: #F4EFE4;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.profile-edit-modal-form {
+  padding: 24px;
+}
+
+.profile-edit-error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 500;
+}
+
+.profile-edit-success-msg {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 500;
+}
+
+.profile-edit-form-group {
+  margin-bottom: 18px;
+}
+
+.profile-edit-form-group label {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 8px;
+}
+
+.profile-edit-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-edit-input-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.profile-edit-input-wrapper input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  background: #182030;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #F4EFE4;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-edit-input-wrapper input:focus {
+  outline: none;
+  border-color: #F0E840;
+  box-shadow: 0 0 0 3px rgba(240, 232, 64, 0.12);
+}
+
+.profile-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.profile-edit-cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-edit-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #F4EFE4;
+}
+
+.profile-edit-save-btn {
+  background: linear-gradient(135deg, #F0E840, #e5d400);
+  border: none;
+  color: #1A2438;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.profile-edit-save-btn:hover {
+  transform: translateY(-1px);
+}
+
+.profile-edit-save-btn:active {
+  transform: translateY(0);
+}
+
+.profile-edit-save-btn:disabled,
+.profile-edit-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Welcome Banner */
@@ -5799,6 +6241,12 @@ textarea:focus-visible {
 
 .mobile-detail-back-btn-new:hover {
   background-color: rgba(232, 93, 38, 0.05);
+}
+
+@media (min-width: 921px) {
+  .mobile-detail-back-btn-new {
+    display: none !important;
+  }
 }
 
 .detail-header-title-wrapper-new {

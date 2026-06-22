@@ -20,7 +20,17 @@ export default function ComplaintList({
   }, [complaints]);
 
   // Derive status options
-  const statusOptions = ['All', 'Submitted', 'In Review', 'Forwarded', 'Resolved'];
+  const statusOptions = ['All', 'In Review', 'Approved', 'Forwarded', 'Solved'];
+
+  const mapFilterToStatus = (filterLabel) => {
+    switch (filterLabel) {
+      case 'In Review': return 'Submitted';
+      case 'Approved':  return 'In Review';
+      case 'Forwarded': return 'Forwarded';
+      case 'Solved':    return 'Resolved';
+      default:          return filterLabel;
+    }
+  };
 
   const filteredComplaints = useMemo(() => {
     return complaints.filter((complaint) => {
@@ -30,7 +40,8 @@ export default function ComplaintList({
         complaint.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (complaint.citizenName && complaint.citizenName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const matchesStatus = selectedStatus === 'All' || complaint.status === selectedStatus;
+      const dbStatus = mapFilterToStatus(selectedStatus);
+      const matchesStatus = selectedStatus === 'All' || complaint.status === dbStatus;
       const matchesType = selectedType === 'All' || complaint.type === selectedType;
 
       return matchesSearch && matchesStatus && matchesType;

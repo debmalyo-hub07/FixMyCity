@@ -498,7 +498,7 @@ async function seedDatabase() {
 
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { name, phone, aadhar, password } = req.body;
+    const { name, phone, aadhar, email, password } = req.body;
     if (!name || !phone || !aadhar || !password) {
       return res.status(400).json({ message: 'All registration fields are required.' });
     }
@@ -513,11 +513,11 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ message: 'Aadhar number already registered.' });
     }
     const hash = await bcrypt.hash(password, 10);
-    const u = new User({ name, phone, aadhar, password: hash, role: 'citizen' });
+    const u = new User({ name, phone, aadhar, email: email || '', password: hash, role: 'citizen' });
     await u.save();
     res.status(201).json({
       message: 'Citizen registered successfully.',
-      user: { name: u.name, phone: u.phone, aadhar: u.aadhar, role: u.role },
+      user: { id: u._id, name: u.name, phone: u.phone, aadhar: u.aadhar, email: u.email || '', role: u.role },
     });
   } catch (e) {
     console.error('Registration error:', e);
@@ -541,8 +541,8 @@ app.post('/api/auth/login', async (req, res) => {
     res.status(200).json({
       message: 'Logged in successfully.',
       user: {
-        name: user.name, phone: user.phone || '', username: user.username || '',
-        aadhar: user.aadhar || '', role: user.role,
+        id: user._id, name: user.name, phone: user.phone || '', username: user.username || '',
+        aadhar: user.aadhar || '', email: user.email || '', role: user.role,
       },
     });
   } catch (e) {

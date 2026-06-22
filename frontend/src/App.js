@@ -42,7 +42,7 @@ const EMPTY_COMPLAINT_FORM = {
 };
 
 const EMPTY_LOGIN_FORM = { phone: '', password: '' };
-const EMPTY_REGISTER_FORM = { name: '', phone: '', aadhar: '', password: '' };
+const EMPTY_REGISTER_FORM = { name: '', phone: '', aadhar: '', email: '', password: '' };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -111,6 +111,28 @@ function App() {
         localStorage.setItem('fixmycity-google-maps-api-key', trimmed);
       }
       window.location.reload();
+    }
+  };
+
+  const updateProfile = async (updatedData) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/update-profile`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(updatedData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update profile.');
+      }
+      setSession(data.user);
+      return { success: true };
+    } catch (err) {
+      console.error('Update profile error:', err);
+      return { success: false, message: err.message };
     }
   };
 
@@ -264,6 +286,7 @@ function App() {
           name: registerForm.name.trim(),
           phone: registerForm.phone.trim(),
           aadhar: registerForm.aadhar.trim(),
+          email: registerForm.email.trim(),
           password: registerForm.password,
         }),
       });
@@ -536,6 +559,7 @@ async function handleComplaintSubmit(event) {
           session={session} 
           logout={logout} 
           changeGoogleMapsApiKey={changeGoogleMapsApiKey} 
+          updateProfile={updateProfile}
         />
       )}
 
