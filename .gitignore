@@ -48,3 +48,11 @@ backend/pothole_model.h5
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Temporary Datasets and Testing
+backend/temp_*/
+backend/my_dataset_quarantine/
+backend/temp_kaggle/
+test-results/
+playwright-report/
+backend/test_db.js

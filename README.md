@@ -167,26 +167,26 @@ FixMyCity/
 
 ---
 
-## AI advisory
+## AI Moderation & Validation
 
-The backend runs each uploaded image through **MobileNet (ImageNet)** and reports a best-guess match against the declared category — but **never blocks** the submission. Why:
+The backend uses a **custom 4-class Civic AI Model** (MobileNetV2 base, fine-tuned on custom datasets) to strictly enforce category correctness and block invalid submissions. It no longer relies on the generic ImageNet classifier.
 
-- A previous custom 4-class CNN overfit (predicted `potholes` for almost everything) due to small dataset (~350 images/class).
-- ImageNet's 1000 classes are mostly animals/food/household; only partial coverage of civic damage.
-- Honest mode: classifier output is advisory metadata for admins, not a gatekeeper.
+### Features
+1. **Cross-Category Enforcement**: If a user submits a pothole image but selects "Broken street light problem", the API will reject the request with HTTP 422 and prompt them to use the correct category.
+2. **"Others" Keyword Routing**: When the "Others" category is selected, the API scans the problem title. If it contains words like `pothole`, `drain`, or `light`, it dynamically overrides the validation target to the specific class, preventing users from bypassing filters by just clicking "Others".
+3. **Threshold Calibration**: Confidence thresholds are individually configured per class in `civic_thresholds.json`.
 
 Pipeline in `backend/server.js`:
 
-1. `loadCivicModel()` loads MobileNet v2 alpha=1.0 from CDN at boot.
-2. On `POST /api/complaints`, the image is decoded, classified, and the top-5 ImageNet labels are inspected.
-3. `CATEGORY_KEYWORDS` maps each civic category to ImageNet substrings (potholes → `crater, pothole, asphalt, road, ...`).
-4. If a top-5 label contains any keyword for the declared category, it's an `advisory_match`; otherwise `advisory_no_match`.
-5. The result is saved on the complaint as `imageCheck.note` (admins see it in detail view).
+1. `loadCivicModel()` loads the TFJS layers model from `backend/civic_model_tfjs` at boot.
+2. On `POST /api/complaints`, the image is base64-decoded and classified.
+3. The model returns probabilities for `drainage`, `others`, `potholes`, and `streetlight`.
+4. `decideBlock()` compares the top probability against the required threshold and blocks if the mismatch is severe or confidence is too low.
 
 Backend log per submit:
-
 ```
-[civic-advisory] declared=Potholes top=[crater (12%), asphalt (8%), pavement (5%)] match=advisory_match
+[civic] Civic graph model loaded. Classes: [ 'drainage', 'others', 'potholes', 'streetlight' ]
+  Pothole→Drainage BLOCKED: potholes(100%) vs declared(0%)
 ```
 
 ---
@@ -271,18 +271,12 @@ Writes `audit_report.csv` listing every flagged mismatch (filename + expected vs
 
 ### Step 5 — Wire up your custom model
 
-Two ways to use the retrained classifier:
+The application is already hardwired to use the local `civic_model_tfjs` directory. 
 
-**A. Keep MobileNet ImageNet (current default).** No code change. Your retrained model just sits in `civic_model_tfjs/`. The runtime ignores it.
-
-**B. Switch to your custom model.** Edit `backend/server.js`:
-
-1. Replace the `loadCivicModel()` body with the previous custom-model loader (load via `http://localhost:${PORT}/model/model.json`).
-2. Replace `classifyCivicImage()` to return `{topClass, topProb, probs}` against your 4 classes.
-3. Replace `decideBlock()` logic — either keep advisory or block when wrong class wins (`block: true` when `prediction.topClass !== declaredClass`).
-4. Re-enable `app.use('/model', express.static(path.join(__dirname, 'civic_model_tfjs')))`.
-
-Git history has the old loader if you want to revert.
+To update the thresholds or tweak the blocking logic:
+1. Open `backend/civic_thresholds.json` to change the minimum confidence required for each category.
+2. If tests fail due to over-eager blocking, run `python temperature_scaling.py` to calibrate the model confidence scores.
+3. Restart the backend (`npm run dev`) so the new thresholds and model take effect.
 
 ### Step 6 — Restart and test
 

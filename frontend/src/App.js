@@ -381,16 +381,27 @@ async function handleComplaintSubmit(event) {
 
       if (!res.ok) {
         const data = await res.json();
-        if (data.reason === 'image_category_mismatch') {
-          setComplaintError({
-            kind: 'mismatch',
-            message: data.message,
-            detected: data.detected,
-            declared: data.declared,
-            confidence: data.confidence,
-            probs: data.probs,
-            block_reason: data.block_reason,
-          });
+        // HTTP 422 = image blocked by AI classifier
+        if (res.status === 422 && data.blocked) {
+          if (data.reason === 'inappropriate_content') {
+            setComplaintError({
+              kind: 'nsfw',
+              message: data.message,
+              suggestion: data.suggestion || '',
+            });
+          } else {
+            setComplaintError({
+              kind: 'mismatch',
+              message: data.message,
+              suggestion: data.suggestion || '',
+              detected: data.aiDetails?.topClass || '',
+              declared: data.aiDetails?.declaredClass || '',
+              confidence: (data.aiDetails?.topConfidence || 0) / 100,
+              declaredConfidence: (data.aiDetails?.declaredConfidence || 0) / 100,
+              probs: data.aiDetails?.allScores || {},
+              block_reason: data.aiDetails?.reason || '',
+            });
+          }
         } else {
           setComplaintError({
             kind: 'generic',

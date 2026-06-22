@@ -242,34 +242,105 @@ export default function ComplaintForm({
             exit={{ opacity: 0, y: -8 }}
             style={{
               marginTop: '20px',
-              padding: '14px 16px',
-              borderRadius: '10px',
-              background: 'rgba(239, 68, 68, 0.08)',
-              border: '1px solid rgba(239, 68, 68, 0.35)',
+              padding: '16px 18px',
+              borderRadius: '12px',
+              background: complaintError.kind === 'mismatch'
+                ? 'rgba(239, 68, 68, 0.07)'
+                : 'rgba(239, 68, 68, 0.07)',
+              border: '1.5px solid rgba(239, 68, 68, 0.35)',
               color: '#b91c1c',
               fontSize: '13px',
-              lineHeight: 1.5,
+              lineHeight: 1.6,
             }}
           >
-            <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>
-              {complaintError.kind === 'mismatch'
+            {/* Header */}
+            <strong style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '14px' }}>
+              <span style={{ fontSize: '16px' }}>
+                {complaintError.kind === 'nsfw' ? '⛔' : complaintError.kind === 'mismatch' ? '🚫' : '⚠️'}
+              </span>
+              {complaintError.kind === 'nsfw'
+                ? 'Inappropriate image detected'
+                : complaintError.kind === 'mismatch'
                 ? 'Image does not match selected category'
                 : 'Submission failed'}
             </strong>
-            <div>{complaintError.message}</div>
-            {complaintError.kind === 'mismatch' && (
-              <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.85 }}>
-                Detected: <strong>{complaintError.detected}</strong>
-                {' · '}Declared: <strong>{complaintError.declared}</strong>
-                {' · '}Confidence: <strong>{Math.round((complaintError.confidence || 0) * 100)}%</strong>
+
+            {/* Main message */}
+            <div style={{ marginBottom: complaintError.kind === 'mismatch' ? '10px' : '0' }}>
+              {complaintError.message}
+            </div>
+
+            {/* AI suggestion */}
+            {complaintError.kind === 'mismatch' && complaintError.suggestion && (
+              <div style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                background: 'rgba(239, 68, 68, 0.06)',
+                fontSize: '12px',
+                fontStyle: 'italic',
+              }}>
+                💡 {complaintError.suggestion}
               </div>
             )}
+
+            {/* Score breakdown */}
+            {complaintError.kind === 'mismatch' && (complaintError.detected || complaintError.declared) && (
+              <div style={{
+                marginTop: '10px',
+                display: 'flex',
+                gap: '10px',
+                flexWrap: 'wrap',
+                fontSize: '11px',
+              }}>
+                {complaintError.declared && (
+                  <span style={{
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                  }}>
+                    Selected: <strong>{complaintError.declared}</strong>
+                    {complaintError.declaredConfidence != null && (
+                      <span> ({Math.round(complaintError.declaredConfidence * 100)}% confidence)</span>
+                    )}
+                  </span>
+                )}
+                {complaintError.detected && complaintError.detected !== complaintError.declared && (
+                  <span style={{
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: 'rgba(59, 130, 246, 0.08)',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    color: '#1d4ed8',
+                  }}>
+                    AI detected: <strong>{complaintError.detected}</strong>
+                    {complaintError.confidence != null && (
+                      <span> ({Math.round(complaintError.confidence * 100)}%)</span>
+                    )}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Guidance */}
+            {complaintError.kind === 'mismatch' && (
+              <div style={{
+                marginTop: '12px',
+                fontSize: '12px',
+                color: '#7f1d1d',
+                opacity: 0.8,
+              }}>
+                Please upload a clear photo of the actual issue, or select a different category.
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setComplaintError(null)}
               style={{
-                marginTop: '10px',
-                padding: '4px 10px',
+                marginTop: '12px',
+                padding: '5px 12px',
                 fontSize: '11px',
                 borderRadius: '6px',
                 background: 'transparent',
@@ -278,7 +349,7 @@ export default function ComplaintForm({
                 cursor: 'pointer',
               }}
             >
-              Dismiss
+              Dismiss & try again
             </button>
           </motion.div>
         )}

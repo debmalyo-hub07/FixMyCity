@@ -1,0 +1,18 @@
+{
+  "temperature": 1.4792,
+  "thresholds": {
+    "drainage": 0.28,
+    "others": 0.6,
+    "potholes": 0.315,
+    "streetlight": 0.28
+  },
+  "class_order": [
+    "drainage",
+    "others",
+    "potholes",
+    "streetlight"
+  ],
+  "target_recall": 0.92,
+  "val_accuracy_uncalibrated": 0.8227,
+  "val_accuracy_calibrated": 0.8227
+}
